@@ -1,9 +1,11 @@
 import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:8000/api';
+import { API_URL } from '../config';
+import { ENDPOINTS } from '../constants/endpoints';
+import { ROUTES } from '../constants/routes';
+import { authStorage } from '../utils/authStorage';
 
 const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -11,15 +13,13 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = authStorage.getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 axiosInstance.interceptors.response.use(
@@ -27,32 +27,37 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        const response = await axios.post(`${API_BASE_URL}/token/refresh/`, {
-          refresh: refreshToken,
-        });
-
-        const { access } = response.data;
-        localStorage.setItem('accessToken', access);
-
-        originalRequest.headers.Authorization = `Bearer ${access}`;
-        return axiosInstance(originalRequest);
-      } catch (refreshError) {
-        // If refresh token is invalid, logout user
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('userData');
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
-      }
+    if (!error.response || error.response.status !== 401 || originalRequest._retry) {
+      return Promise.reject(error);
     }
 
-    return Promise.reject(error);
+    originalRequest._retry = true;
+
+    try {
+      const refreshToken = authStorage.getRefreshToken();
+      if (!refreshToken) {
+        throw new Error('No refresh token');
+      }
+
+      const response = await axios.post(`${API_URL}${ENDPOINTS.auth.tokenRefresh}`, {
+        refresh: refreshToken,
+      });
+
+      const { access } = response.data;
+      authStorage.setSession({
+        access,
+        refresh: refreshToken,
+        user: authStorage.getUser(),
+      });
+
+      originalRequest.headers.Authorization = `Bearer ${access}`;
+      return axiosInstance(originalRequest);
+    } catch (refreshError) {
+      authStorage.clearSession();
+      window.location.href = ROUTES.login;
+      return Promise.reject(refreshError);
+    }
   }
 );
 
-export default axiosInstance; 
+export default axiosInstance;

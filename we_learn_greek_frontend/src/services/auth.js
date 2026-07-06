@@ -1,37 +1,33 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+import axiosInstance from './axiosConfig';
+import { ENDPOINTS } from '../constants/endpoints';
 
 export const authAPI = {
-  register: async (userData) => {
-    const response = await fetch(`${API_BASE_URL}/register/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
+  /** Body: { email, password, first_name, last_name } */
+  register: async ({ email, password, first_name, last_name }) => {
+    const response = await axiosInstance.post(ENDPOINTS.auth.register, {
+      email,
+      password,
+      first_name,
+      last_name,
     });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Registration failed');
-    }
-    
-    return response.json();
+    return response.data;
   },
 
-  login: async (credentials) => {
-    const response = await fetch(`${API_BASE_URL}/login/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Login failed');
-    }
-
-    return response.json();
+  /** Body: { email, password } → { access, refresh } */
+  login: async ({ email, password }) => {
+    const response = await axiosInstance.post(ENDPOINTS.auth.login, { email, password });
+    return response.data;
   },
-}; 
+
+  /** SimpleJWT token obtain — same as login, email-based */
+  obtainToken: async ({ email, password }) => {
+    const response = await axiosInstance.post(ENDPOINTS.auth.token, { email, password });
+    return response.data;
+  },
+
+  /** Body: { refresh } → { access } */
+  refreshToken: async (refresh) => {
+    const response = await axiosInstance.post(ENDPOINTS.auth.tokenRefresh, { refresh });
+    return response.data;
+  },
+};

@@ -2,9 +2,6 @@ import { useState } from 'react';
 import slider1 from '../../assets/images/slider_1.jpg';
 
 function Slideshow() {
-  console.log('Slideshow rendering');
-  console.log('Image path:', slider1); // Debug image path
-
   return (
     <div className="relative h-[600px] w-full bg-gray-200">
       {/* Test with a single image first */}

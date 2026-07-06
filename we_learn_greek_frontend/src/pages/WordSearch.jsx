@@ -1,196 +1,90 @@
-import React, { useState, useEffect } from "react";
-import { FaSearch } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { ROUTES } from '../constants/routes';
+import { declinatorAPI } from '../services/declinator';
+import { PageHero, SearchPageSection } from '../components/features';
+import { Alert, Card, SkeletonList } from '../components/ui';
+import { useDebouncedValue } from '../hooks/useDebouncedValue';
+import { useHeroVideo } from '../hooks/useHeroVideo';
+import { normalizeListResponse } from '../services/apiHelpers';
+import { ENABLE_DEMO_DATA } from '../config';
+import { demoNouns } from '../data/demo';
+
+const HERO_HEADLINES = [
+  'Master Greek grammar with ease!',
+  'Learn Greek nouns and cases!',
+  'Explore Greek declensions!',
+];
 
 const WordSearch = () => {
-  const [index, setIndex] = useState(0);
-  const sentences = [
-    "Master Greek grammar with ease!",
-    "Learn Greek nouns and cases!",
-    "Explore Greek declensions!"
-  ];
+  const video = useHeroVideo('background');
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebouncedValue(searchTerm, 400);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex((prevIndex) => (prevIndex + 1) % sentences.length);
-    }, 3000);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['noun-search', debouncedSearch],
+    queryFn: () => declinatorAPI.searchNouns(debouncedSearch, 1, { page_size: 8 }),
+    enabled: debouncedSearch.trim().length >= 2,
+    retry: false,
+  });
 
-    return () => clearInterval(timer);
-  }, []);
-
-  const styles = {
-    container: {
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column'
-    },
-    heroSection: {
-      position: 'relative',
-      height: '572px',
-      width: '100%',
-    },
-    heroVideo: {
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-    },
-    overlay: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',  // Dark overlay
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    heroText: {
-      fontSize: '3.75rem',
-      fontWeight: 'bold',
-      color: 'white',
-      textAlign: 'center',
-      zIndex: 1
-    },
-    searchSection: {
-      background: 'linear-gradient(to right, #1d4ed8, #3b82f6)',
-      color: 'white',
-      padding: '3rem 1.5rem',
-      minHeight: '600px',
-      display: 'flex',
-      justifyContent: 'flex-start',
-      alignItems: 'center',
-      flexDirection: 'column'
-    },
-    contentWrapper: {
-      maxWidth: '56rem',
-      width: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      marginTop: '2rem'
-    },
-    title: {
-      fontSize: '2.25rem',
-      fontWeight: 'bold',
-      color: 'white',
-      textAlign: 'center',
-      marginBottom: '3rem'
-    },
-    searchContainer: {
-      position: 'relative',
-      width: '100%',
-      maxWidth: '32rem',
-      display: 'flex',
-      justifyContent: 'center'
-    },
-    searchInput: {
-      width: '100%',
-      padding: '1rem',
-      paddingLeft: '3rem',
-      paddingRight: '5rem',
-      borderRadius: '9999px',
-      backgroundColor: '#1a1a1a',
-      color: 'white',
-      border: 'none',
-      outline: 'none'
-    },
-    searchIcon: {
-      position: 'absolute',
-      left: '1rem',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      color: '#6b7280'
-    },
-    searchButton: {
-      position: 'absolute',
-      right: '0.5rem',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      backgroundColor: '#2563eb',
-      color: 'white',
-      padding: '0.5rem 1rem',
-      borderRadius: '9999px',
-      border: 'none',
-      cursor: 'pointer',
-      transition: 'background-color 0.2s'
-    },
-    helperText: {
-      marginTop: '1.5rem',
-      fontSize: '0.875rem',
-      color: 'white'
-    },
-    link: {
-      color: 'white',
-      fontWeight: 'bold',
-      textDecoration: 'underline',
-      cursor: 'pointer'
-    },
-    resultsArea: {
-      marginTop: '2rem',
-      minHeight: '400px',
-      width: '100%'
-    }
-  };
+  const apiResults = normalizeListResponse(data);
+  const demoResults =
+    debouncedSearch.trim().length >= 2
+      ? demoNouns.filter((n) =>
+          n.basic_noun.toLowerCase().includes(debouncedSearch.toLowerCase())
+        )
+      : [];
+  const results = isError && ENABLE_DEMO_DATA ? demoResults.slice(0, 8) : apiResults;
 
   return (
-    <div style={styles.container}>
-      {/* Hero Section with Video Background */}
-      <div style={styles.heroSection}>
-        <video
-          src="/src/assets/videos/athens.mp4"
-          style={styles.heroVideo}
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
-        <div style={styles.overlay}>
-          <motion.h1
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-            style={styles.heroText}
-          >
-            {sentences[index]}
-          </motion.h1>
-        </div>
-      </div>
+    <div className="flex min-h-screen flex-col">
+      <PageHero video={video} headlines={HERO_HEADLINES} />
 
-      {/* Search Section */}
-      <section style={styles.searchSection}>
-        <div style={styles.contentWrapper}>
-          <h2 style={styles.title}>Find Any Greek Noun and Explore Its Forms</h2>
-          <div style={styles.searchContainer}>
-            <input
-              type="text"
-              placeholder="Type a Greek noun..."
-              style={styles.searchInput}
-            />
-            <FaSearch style={styles.searchIcon} size={20} />
-            <button 
-              style={styles.searchButton}
-              onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
-              onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
-            >
-              Search
-            </button>
-          </div>
-          <p style={styles.helperText}>
+      <SearchPageSection
+        title="Find Any Greek Noun and Explore Its Forms"
+        helperText={
+          <>
             To see all Greek nouns,{' '}
-            <Link to="/declinator/nouns" style={styles.link}>
+            <Link to={ROUTES.declinatorNouns} className="font-semibold underline hover:text-white">
               click here
             </Link>
-          </p>
-          
-          <div style={styles.resultsArea}>
-            {/* Search results will appear here */}
-          </div>
+          </>
+        }
+      >
+        <input
+          type="search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Type a Greek noun..."
+          className="w-full max-w-lg rounded-full bg-gray-900 px-4 py-3 text-center text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-brand-500"
+        />
+
+        <div className="mt-8 w-full max-w-3xl">
+          {debouncedSearch.trim().length < 2 ? (
+            <p className="text-center text-sm text-white/80">Type at least 2 characters to search.</p>
+          ) : isLoading ? (
+            <SkeletonList count={2} />
+          ) : results.length === 0 ? (
+            <p className="text-center text-white">No nouns found.</p>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {results.map((noun) => (
+                <Card key={noun.id} padding="sm" className="text-left">
+                  <p className="font-display text-lg font-semibold text-brand-900">{noun.basic_noun}</p>
+                  <p className="text-sm capitalize text-gray-500">{noun.gender}</p>
+                </Card>
+              ))}
+            </div>
+          )}
+          {isError && ENABLE_DEMO_DATA && debouncedSearch.trim().length >= 2 && (
+            <Alert variant="info" className="mt-4">
+              API unavailable — showing demo matches.
+            </Alert>
+          )}
         </div>
-      </section>
+      </SearchPageSection>
     </div>
   );
 };

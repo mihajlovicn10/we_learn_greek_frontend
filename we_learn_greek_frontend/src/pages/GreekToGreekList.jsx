@@ -1,195 +1,135 @@
 import { useState, useEffect } from 'react';
-import { greekToGreekAPI } from '../services/greekToGreek';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useQuery } from '@tanstack/react-query';
+import { greekToGreekAPI, normalizeListResponse, getPaginationMeta } from '../services';
 import { showToast } from '../components/common/Toast';
+import { PageLayout } from '../components/layout';
+import {
+  Badge,
+  Card,
+  EmptyState,
+  FilterSelect,
+  Pagination,
+  SearchBar,
+  SkeletonList,
+} from '../components/ui';
+import { useDebouncedValue } from '../hooks/useDebouncedValue';
 
-function GreekToGreek() {
-  const [words, setWords] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const difficulties = ['Easy', 'Medium', 'Hard'];
+const categories = ['Noun', 'Verb', 'Adjective', 'Adverb', 'Other'];
+
+function GreekToGreekList() {
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('word');
-  const [sortOrder, setSortOrder] = useState('asc');
-  const [filters, setFilters] = useState({
-    difficulty: '',
-    category: ''
+  const debouncedSearch = useDebouncedValue(searchTerm);
+  const [filters, setFilters] = useState({ difficulty: '', category: '' });
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['greek-to-greek', page, debouncedSearch, filters],
+    queryFn: async () => {
+      if (debouncedSearch.trim()) {
+        return greekToGreekAPI.searchWords(debouncedSearch, page);
+      }
+      return greekToGreekAPI.getAllWords(page, {
+        ordering: 'word',
+        ...filters,
+      });
+    },
+    placeholderData: (prev) => prev,
   });
 
-  const difficulties = ['Easy', 'Medium', 'Hard'];
-  const categories = ['Noun', 'Verb', 'Adjective', 'Adverb', 'Other'];
-
   useEffect(() => {
-    fetchWords();
-  }, [page, sortBy, sortOrder, filters]);
+    if (isError) showToast.error('Failed to fetch words');
+  }, [isError]);
 
-  const fetchWords = async () => {
-    try {
-      setLoading(true);
-      const data = await greekToGreekAPI.getAllWords(page, {
-        sort_by: sortBy,
-        sort_order: sortOrder,
-        ...filters
-      });
-      setWords(data.results);
-      setTotalPages(Math.ceil(data.count / 12));
-    } catch (err) {
-      setError(err.message);
-      showToast.error('Failed to fetch words');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!searchTerm.trim()) {
-      await fetchWords();
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const data = await greekToGreekAPI.searchWords(searchTerm, 1);
-      setWords(data.results);
-      setTotalPages(Math.ceil(data.count / 12));
-      setPage(1);
-    } catch (err) {
-      showToast.error('Search failed');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const words = normalizeListResponse(data);
+  const totalPages = getPaginationMeta(data, 12).totalPages;
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFilters((prev) => ({ ...prev, [name]: value }));
     setPage(1);
   };
 
-  const toggleSort = (field) => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortOrder('asc');
-    }
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setPage(1);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Greek to Greek Dictionary</h1>
-
-      {/* Search and Filters */}
-      <div className="mb-6 space-y-4">
-        <form onSubmit={handleSearch} className="flex gap-2">
-          <input
-            type="text"
+    <PageLayout title="Greek to Greek Dictionary" background="muted">
+      <div className="mb-8 space-y-4">
+        <form onSubmit={handleSearchSubmit}>
+          <SearchBar
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 p-2 border rounded-lg"
             placeholder="Search words..."
+            showButton
+            className="max-w-xl"
           />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Search
-          </button>
         </form>
 
         <div className="flex flex-wrap gap-4">
-          <select
+          <FilterSelect
             name="difficulty"
             value={filters.difficulty}
             onChange={handleFilterChange}
-            className="p-2 border rounded-lg"
+            className="min-w-[160px] bg-white text-gray-900"
           >
             <option value="">All Difficulties</option>
-            {difficulties.map(diff => (
+            {difficulties.map((diff) => (
               <option key={diff} value={diff.toLowerCase()}>
                 {diff}
               </option>
             ))}
-          </select>
+          </FilterSelect>
 
-          <select
+          <FilterSelect
             name="category"
             value={filters.category}
             onChange={handleFilterChange}
-            className="p-2 border rounded-lg"
+            className="min-w-[160px] bg-white text-gray-900"
           >
             <option value="">All Categories</option>
-            {categories.map(cat => (
+            {categories.map((cat) => (
               <option key={cat} value={cat.toLowerCase()}>
                 {cat}
               </option>
             ))}
-          </select>
+          </FilterSelect>
         </div>
       </div>
 
-      {/* Words List */}
-      {loading ? (
-        <div className="py-8 flex justify-center">
-          <LoadingSpinner />
-        </div>
+      {isLoading ? (
+        <SkeletonList count={6} />
+      ) : words.length === 0 ? (
+        <EmptyState message="No words found. Try adjusting your search or filters." />
       ) : (
         <>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {words.map((word) => (
-              <div key={word.id} className="bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-bold text-blue-600 mb-2">
-                  {word.word}
-                </h2>
-                <p className="text-gray-600 mb-2">
-                  Category: {word.category}
-                </p>
-                <p className="text-gray-600 mb-4">
-                  Difficulty: {word.difficulty}
-                </p>
-                <div className="space-y-2">
-                  <p className="font-medium">Definition:</p>
-                  <p className="text-gray-700">{word.definition}</p>
-                  {word.example && (
-                    <>
-                      <p className="font-medium mt-4">Example:</p>
-                      <p className="text-gray-700 italic">{word.example}</p>
-                    </>
-                  )}
+              <Card key={word.id} hover>
+                <h2 className="mb-2 font-display text-xl font-bold text-brand-900">{word.word}</h2>
+                <div className="mb-4 flex flex-wrap gap-2">
+                  <Badge variant="brand">{word.category}</Badge>
+                  <Badge variant="accent">{word.difficulty}</Badge>
                 </div>
-              </div>
+                <p className="mb-1 text-sm font-semibold text-gray-700">Definition</p>
+                <p className="mb-4 text-gray-600">{word.definition}</p>
+                {word.example && (
+                  <>
+                    <p className="mb-1 text-sm font-semibold text-gray-700">Example</p>
+                    <p className="italic text-gray-600">{word.example}</p>
+                  </>
+                )}
+              </Card>
             ))}
           </div>
 
-          {/* Pagination */}
-          <div className="mt-8 flex justify-center items-center gap-4">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-4 py-2 border rounded-lg disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <span>
-              Page {page} of {totalPages}
-            </span>
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="px-4 py-2 border rounded-lg disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
         </>
       )}
-    </div>
+    </PageLayout>
   );
 }
 
-export default GreekToGreek;  
+export default GreekToGreekList;

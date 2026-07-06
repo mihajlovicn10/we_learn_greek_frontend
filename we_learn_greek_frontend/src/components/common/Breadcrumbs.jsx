@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { ROUTES } from '../../constants/routes';
 
 const Breadcrumbs = () => {
   const location = useLocation();
@@ -9,7 +10,7 @@ const Breadcrumbs = () => {
     <nav className="flex" aria-label="Breadcrumb">
       <ol className="inline-flex items-center space-x-1 md:space-x-3">
         <li className="inline-flex items-center">
-          <Link to="/" className="text-gray-700 hover:text-blue-600">
+          <Link to={ROUTES.home} className="text-gray-700 hover:text-blue-600">
             Home
           </Link>
         </li>

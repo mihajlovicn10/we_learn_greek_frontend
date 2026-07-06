@@ -1,75 +1,124 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
-import ProtectedRoute from './components/ProtectedRoute'
-import Navbar from './components/layout/Navbar'
-import Footer from './components/layout/Footer'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import ErrorBoundary from './components/common/ErrorBoundary'
-import Toast from './components/common/Toast'
+import { lazy, Suspense } from 'react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Navbar from './components/layout/Navbar';
+import Footer from './components/layout/Footer';
+import PageLoader from './components/layout/PageLoader';
+import PageTransition from './components/layout/PageTransition';
+import ErrorBoundary from './components/common/ErrorBoundary';
+import Toast from './components/common/Toast';
+import { queryClient } from './lib/queryClient';
+import { ROUTES } from './constants/routes';
 
-// Conjugator pages
-import VerbList from './pages/VerbList'
-import VerbSearch from './pages/VerbSearch'
+import Home from './pages/Home';
 
-// Dictionary pages
-import AddWord from './pages/AddWord'
-import WordDictionary from './pages/WordDictionary'
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const VerbList = lazy(() => import('./pages/VerbList'));
+const VerbSearch = lazy(() => import('./pages/VerbSearch'));
+const WordDictionary = lazy(() => import('./pages/WordDictionary'));
+const GreekToGreekList = lazy(() => import('./pages/GreekToGreekList'));
+const TransparentLanguageSelect = lazy(() => import('./pages/TransparentLanguageSelect'));
+const TransparentWords = lazy(() => import('./pages/TransparentWords'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Terms = lazy(() => import('./pages/Terms'));
+const WordSearch = lazy(() => import('./pages/WordSearch'));
+const WordList = lazy(() => import('./pages/WordList'));
+const SavedWords = lazy(() => import('./pages/SavedWords'));
 
-// Greek to Greek pages
-import GreekToGreekList from './pages/GreekToGreekList'
-import GreekToGreek from './pages/GreekToGreekSearch'
-
-// Transparent Words pages
-import TransparentLanguageSelect from './pages/TransparentLanguageSelect'
-import TransparentWords from './pages/TransparentWords'
-
-// New pages
-import About from './pages/About'
-import Contact from './pages/Contact'
-import Privacy from './pages/Privacy'
-import Terms from './pages/Terms'
-import WordSearch from './pages/WordSearch'
-import WordList from './pages/WordList'
-import SavedWords from './pages/SavedWords'
-  
-function App() {
-  console.log('App is rendering');
+function AppRoutes() {
+  const location = useLocation();
 
   return (
-    <ErrorBoundary>
-      <Router>
-        <AuthProvider>
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/dictionary" element={<WordDictionary />} />
-                <Route path="/dictionary/words" element={<SavedWords />} />
-                <Route path="/conjugator/verbs" element={<VerbList />} />
-                <Route path="/declinator" element={<WordSearch />} />
-                <Route path="/declinator/nouns" element={<WordList />} />
-                <Route path="/greek-to-greek" element={<GreekToGreek />} />
-                <Route path="/transparent-words/:language" element={<TransparentWords />} />
-                <Route path="/transparent-language-select" element={<TransparentLanguageSelect />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/verb-search" element={<VerbSearch />} />
-              </Routes>
-            </main>
-            <Footer />
-            <Toast />
-          </div>
-        </AuthProvider>
-      </Router>
-    </ErrorBoundary>
-  )
+    <AnimatePresence mode="wait">
+      <PageTransition key={location.pathname}>
+        <Suspense fallback={<PageLoader />}>
+          <Routes location={location}>
+            <Route path={ROUTES.home} element={<Home />} />
+
+            <Route
+              path={ROUTES.dictionary}
+              element={
+                <ProtectedRoute>
+                  <WordDictionary />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={ROUTES.savedWords}
+              element={
+                <ProtectedRoute>
+                  <SavedWords />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path={ROUTES.verbSearch} element={<VerbSearch />} />
+            <Route path={ROUTES.conjugatorVerbs} element={<VerbList />} />
+            <Route path={ROUTES.declinator} element={<WordSearch />} />
+            <Route path={ROUTES.declinatorNouns} element={<WordList />} />
+            <Route path={ROUTES.greekToGreek} element={<GreekToGreekList />} />
+
+            <Route path="/transparent-words/:language" element={<TransparentWords />} />
+            <Route
+              path={ROUTES.transparentLanguageSelect}
+              element={<TransparentLanguageSelect />}
+            />
+
+            <Route path={ROUTES.login} element={<Login />} />
+            <Route path={ROUTES.register} element={<Register />} />
+            <Route path={ROUTES.about} element={<About />} />
+            <Route path={ROUTES.contact} element={<Contact />} />
+            <Route path={ROUTES.privacy} element={<Privacy />} />
+            <Route path={ROUTES.terms} element={<Terms />} />
+
+            <Route path="/conjugator" element={<Navigate to={ROUTES.verbSearch} replace />} />
+            <Route
+              path="/greek-to-greek-dictionary"
+              element={<Navigate to={ROUTES.greekToGreek} replace />}
+            />
+            <Route
+              path="/transparent-greek-words"
+              element={<Navigate to={ROUTES.transparentLanguageSelect} replace />}
+            />
+            <Route path="/noun-search" element={<Navigate to={ROUTES.declinator} replace />} />
+          </Routes>
+        </Suspense>
+      </PageTransition>
+    </AnimatePresence>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <AuthProvider>
+            <div className="flex min-h-screen flex-col">
+              <Navbar />
+              <main className="flex-grow overflow-x-hidden">
+                <AppRoutes />
+              </main>
+              <Footer />
+              <Toast />
+            </div>
+          </AuthProvider>
+        </Router>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
+}
+
+export default App;

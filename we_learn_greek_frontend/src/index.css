@@ -2,4 +2,65 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
 
+  body {
+    @apply font-sans text-gray-900 bg-surface-muted antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-brand-900;
+  }
+
+  a {
+    @apply transition-colors duration-300 ease-smooth;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-surface-muted;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .page-container {
+    @apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-12 sm:py-16;
+  }
+
+  .gradient-section {
+    @apply bg-gradient-brand text-white section-padding;
+  }
+
+  .input-pill-dark {
+    @apply w-full rounded-full bg-gray-900 px-4 py-3 text-center text-white
+      placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-brand-500;
+  }
+
+  .btn-pill-primary {
+    @apply w-full rounded-full bg-brand-600 py-3 font-semibold text-white
+      transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+}
