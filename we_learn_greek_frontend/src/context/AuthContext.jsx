@@ -1,26 +1,32 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authStorage } from '../utils/authStorage';
 import { ROUTES } from '../constants/routes';
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-
-  useEffect(() => {
+function readInitialAuth() {
+  try {
     authStorage.clearLegacyKeys();
-
     if (authStorage.isAuthenticated()) {
-      setIsAuthenticated(true);
-      setUser(authStorage.getUser());
+      return {
+        user: authStorage.getUser(),
+        isAuthenticated: true,
+      };
     }
+  } catch (error) {
+    console.warn('Auth init failed:', error);
+  }
 
-    setLoading(false);
-  }, []);
+  return {
+    user: null,
+    isAuthenticated: false,
+  };
+}
+
+export const AuthProvider = ({ children }) => {
+  const [{ user, isAuthenticated }, setAuth] = useState(readInitialAuth);
+  const navigate = useNavigate();
 
   const login = useCallback((userData, tokens) => {
     authStorage.setSession({
@@ -28,14 +34,12 @@ export const AuthProvider = ({ children }) => {
       refresh: tokens.refresh,
       user: userData,
     });
-    setUser(userData);
-    setIsAuthenticated(true);
+    setAuth({ user: userData, isAuthenticated: true });
   }, []);
 
   const logout = useCallback(() => {
     authStorage.clearSession();
-    setUser(null);
-    setIsAuthenticated(false);
+    setAuth({ user: null, isAuthenticated: false });
     navigate(ROUTES.login);
   }, [navigate]);
 
@@ -44,14 +48,10 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     login,
     logout,
-    loading,
+    loading: false,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

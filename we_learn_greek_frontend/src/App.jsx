@@ -6,14 +6,12 @@ import {
   Navigate,
   useLocation,
 } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import PageLoader from './components/layout/PageLoader';
-import PageTransition from './components/layout/PageTransition';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import Toast from './components/common/Toast';
 import { queryClient } from './lib/queryClient';
@@ -41,10 +39,8 @@ function AppRoutes() {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
-      <PageTransition key={location.pathname}>
-        <Suspense fallback={<PageLoader />}>
-          <Routes location={location}>
+    <Suspense fallback={<PageLoader />}>
+      <Routes location={location}>
             <Route path={ROUTES.home} element={<Home />} />
 
             <Route
@@ -94,9 +90,7 @@ function AppRoutes() {
             />
             <Route path="/noun-search" element={<Navigate to={ROUTES.declinator} replace />} />
           </Routes>
-        </Suspense>
-      </PageTransition>
-    </AnimatePresence>
+    </Suspense>
   );
 }
 
