@@ -1,4 +1,4 @@
-import { Section } from '../layout';
+import Section from '../layout/Section';
 
 function SearchPageSection({ title, children, helperText, className = '' }) {
   return (

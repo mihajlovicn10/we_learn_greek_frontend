@@ -24,19 +24,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('framer-motion')) return 'motion';
-            if (id.includes('@tanstack/react-query')) return 'query';
-            if (id.includes('react-router')) return 'router';
-            if (id.includes('react-dom') || id.includes('react/')) return 'react';
-            return 'vendor';
-          }
-        },
-      },
-    },
-  },
 });
