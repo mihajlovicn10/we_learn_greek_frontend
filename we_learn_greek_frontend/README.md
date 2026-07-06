@@ -24,7 +24,11 @@ App runs at [http://localhost:3000](http://localhost:3000).
 
 ## Deploy on Vercel
 
-1. Push this repo to GitHub (already: `mihajlovicn10/we_learn_greek_frontend`).
+> **Important:** This GitHub repo root is one level above the app. Either:
+> - use the root `vercel.json` (already configured), **or**
+> - in Vercel → Settings → General → **Root Directory** → `we_learn_greek_frontend`
+
+1. Push this repo to GitHub (`mihajlovicn10/we_learn_greek_frontend`).
 2. Go to [vercel.com/new](https://vercel.com/new) → **Import** the repository.
 3. Vercel auto-detects **Vite**. Confirm:
    - **Framework Preset:** Vite
