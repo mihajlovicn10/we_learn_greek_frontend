@@ -1,44 +1,31 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FaHome, FaBars, FaTimes, FaUser } from 'react-icons/fa';
+import { useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { FaBars, FaTimes, FaUser } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
-import { MORE_MENU_ROUTES, ROUTES } from '../../constants/routes';
+import { NAV_LINKS, ROUTES } from '../../constants/routes';
+import { DonateButton } from '../features';
+import LanguageSwitcher from './LanguageSwitcher';
+import { prefetchOn } from '../../routes/pages';
 
-const NAV_LINKS = [
-  { label: 'Declinator', to: ROUTES.declinator },
-  { label: 'Conjugator', to: ROUTES.verbSearch },
-  { label: 'Dictionary', to: ROUTES.dictionary },
-  { label: 'Greek to Greek', to: ROUTES.greekToGreek },
-  { label: 'Transparent Words', to: ROUTES.transparentLanguageSelect },
-];
+const linkClass = ({ isActive }) =>
+  `whitespace-nowrap rounded-lg px-3 py-2 text-sm transition-colors ${
+    isActive ? 'bg-white/15 font-semibold text-white' : 'text-brand-100 hover:bg-white/10 hover:text-white'
+  }`;
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { t } = useTranslation();
 
-  const displayName =
-    user?.first_name ||
-    user?.email?.split('@')[0] ||
-    'Account';
-
-  const handleMoreChange = (e) => {
-    const value = e.target.value;
-    if (!value) return;
-    const path = MORE_MENU_ROUTES[value];
-    if (path) {
-      navigate(path);
-      setIsMenuOpen(false);
-    }
-    e.target.value = '';
-  };
-
+  const displayName = user?.first_name || user?.email?.split('@')[0] || t('nav.account');
   const closeMenu = () => setIsMenuOpen(false);
 
-  const authLinks = isAuthenticated ? (
+  const renderAuthLinks = (compact) => isAuthenticated ? (
     <div className="flex items-center gap-3">
-      <span className="flex items-center gap-2 text-sm text-brand-100">
-        <FaUser size={14} />
+      {/* The name only fits beside the full nav (longest in Greek) on very wide screens; the menu always has room. */}
+      <span className={`items-center gap-2 text-sm text-brand-100 ${compact ? 'hidden 2xl:flex' : 'flex'}`}>
+        <FaUser size={13} aria-hidden="true" />
         {displayName}
       </span>
       <button
@@ -47,9 +34,9 @@ const Navbar = () => {
           logout();
           closeMenu();
         }}
-        className="rounded-lg border border-white/20 px-3 py-1.5 text-sm text-brand-100 transition-colors hover:bg-white/10 hover:text-white"
+        className="whitespace-nowrap rounded-lg border border-white/20 px-3 py-1.5 text-sm text-brand-100 transition-colors hover:bg-white/10 hover:text-white"
       >
-        Logout
+        {t('nav.logOut')}
       </button>
     </div>
   ) : (
@@ -57,102 +44,79 @@ const Navbar = () => {
       <Link
         to={ROUTES.login}
         onClick={closeMenu}
-        className="text-sm text-brand-100 transition-colors hover:text-white"
+        className="whitespace-nowrap text-sm text-brand-100 transition-colors hover:text-white"
       >
-        Login
+        {t('nav.logIn')}
       </Link>
       <Link
         to={ROUTES.register}
         onClick={closeMenu}
-        className="rounded-lg border border-white/20 px-3 py-1.5 text-sm text-brand-100 transition-colors hover:bg-white/10 hover:text-white"
+        className="whitespace-nowrap rounded-lg bg-white px-3 py-1.5 text-sm font-semibold text-brand-900 transition-colors hover:bg-brand-50"
       >
-        Register
+        {t('nav.signUp')}
       </Link>
     </div>
   );
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/10 bg-brand-900/90 backdrop-blur-md">
+    <nav className="sticky top-0 z-50 border-b border-white/10 bg-brand-900/95 backdrop-blur-md">
       <div className="page-container px-4 py-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <Link
             to={ROUTES.home}
             onClick={closeMenu}
-            className="flex items-center gap-2 text-brand-100 transition-colors hover:text-white"
+            className="flex shrink-0 items-center gap-2 font-display text-lg font-semibold text-white"
           >
-            <FaHome size={18} />
-            <span className="hidden font-display text-lg font-semibold sm:inline">
-              We Learn Greek
+            <span
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-xl"
+              aria-hidden="true"
+            >
+              Ω
             </span>
+            We Learn Greek
           </Link>
 
-          <div className="hidden items-center space-x-6 md:flex">
-            {NAV_LINKS.map(({ label, to }) => (
-              <Link
-                key={to}
-                to={to}
-                className="text-sm text-brand-100 transition-colors hover:text-white"
-              >
-                {label}
-              </Link>
+          <div className="hidden items-center gap-1 xl:flex">
+            {NAV_LINKS.map(({ labelKey, to }) => (
+              <NavLink key={to} to={to} className={linkClass} {...prefetchOn(to)}>
+                {t(labelKey)}
+              </NavLink>
             ))}
           </div>
 
-          <div className="hidden items-center space-x-4 md:flex">
-            {authLinks}
-            <select
-              className="rounded-lg border border-white/20 bg-brand-900/50 px-2 py-1.5 text-sm text-brand-100"
-              defaultValue=""
-              onChange={handleMoreChange}
-              aria-label="More links"
-            >
-              <option value="" disabled>
-                More...
-              </option>
-              <option value="about">About</option>
-              <option value="privacy">Privacy Policy</option>
-              <option value="contact">Contact</option>
-            </select>
+          <div className="hidden items-center gap-4 xl:flex">
+            <LanguageSwitcher />
+            <DonateButton size="small" label={t('nav.support')} source="navbar" />
+            {renderAuthLinks(true)}
           </div>
 
-          <button
-            type="button"
-            className="text-brand-100 focus:outline-none md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-          </button>
+          <div className="flex items-center gap-3 xl:hidden">
+            <LanguageSwitcher />
+            <button
+              type="button"
+              className="text-brand-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
+              aria-expanded={isMenuOpen}
+            >
+              {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+            </button>
+          </div>
         </div>
 
         {isMenuOpen && (
-          <div className="mt-3 border-t border-white/10 pt-3 md:hidden">
-            {NAV_LINKS.map(({ label, to }) => (
-              <Link
-                key={to}
-                to={to}
-                className="block py-2 text-brand-100 transition-colors hover:text-white"
-                onClick={closeMenu}
-              >
-                {label}
-              </Link>
-            ))}
+          <div className="mt-3 border-t border-white/10 pt-3 xl:hidden">
+            <div className="flex flex-col">
+              {NAV_LINKS.map(({ labelKey, to }) => (
+                <NavLink key={to} to={to} className={linkClass} onClick={closeMenu} {...prefetchOn(to)}>
+                  {t(labelKey)}
+                </NavLink>
+              ))}
+            </div>
 
-            <div className="mt-2 border-t border-white/10 py-2">{authLinks}</div>
+            <div className="mt-2 border-t border-white/10 py-3">{renderAuthLinks(false)}</div>
 
-            <select
-              className="mt-2 w-full rounded-lg border border-white/20 bg-brand-900/80 px-2 py-2 text-sm text-brand-100"
-              defaultValue=""
-              onChange={handleMoreChange}
-              aria-label="More links"
-            >
-              <option value="" disabled>
-                More...
-              </option>
-              <option value="about">About</option>
-              <option value="privacy">Privacy Policy</option>
-              <option value="contact">Contact</option>
-            </select>
+            <DonateButton size="small" source="navbar-mobile" onClick={closeMenu} className="w-full" />
           </div>
         )}
       </div>

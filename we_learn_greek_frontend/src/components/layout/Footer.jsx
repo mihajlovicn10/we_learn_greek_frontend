@@ -1,22 +1,19 @@
 import { Link } from 'react-router-dom';
-import { ROUTES } from '../../constants/routes';
+import { useTranslation } from 'react-i18next';
+import { NAV_LINKS, ROUTES } from '../../constants/routes';
+import { DonateButton } from '../features';
+import { prefetchOn } from '../../routes/pages';
 
 const FOOTER_LINKS = [
-  { label: 'About', to: ROUTES.about },
-  { label: 'Contact', to: ROUTES.contact },
-  { label: 'Privacy', to: ROUTES.privacy },
-  { label: 'Terms', to: ROUTES.terms },
-];
-
-const FEATURE_LINKS = [
-  { label: 'Dictionary', to: ROUTES.dictionary },
-  { label: 'Declinator', to: ROUTES.declinator },
-  { label: 'Conjugator', to: ROUTES.verbSearch },
-  { label: 'Greek to Greek', to: ROUTES.greekToGreek },
-  { label: 'Transparent Words', to: ROUTES.transparentLanguageSelect },
+  { labelKey: 'footer.about', to: ROUTES.about },
+  { labelKey: 'footer.contact', to: ROUTES.contact },
+  { labelKey: 'footer.privacy', to: ROUTES.privacy },
+  { labelKey: 'footer.terms', to: ROUTES.terms },
+  { labelKey: 'footer.supportUs', to: ROUTES.support },
 ];
 
 const Footer = () => {
+  const { t } = useTranslation();
   return (
     <footer className="mt-auto bg-brand-900 text-brand-100">
       <div className="page-container px-4 py-10">
@@ -24,19 +21,20 @@ const Footer = () => {
           <div>
             <h2 className="font-display text-lg font-semibold text-white">We Learn Greek</h2>
             <p className="mt-2 text-sm text-brand-200">
-              Learn Modern Greek with dictionaries, conjugations, declensions, and more.
+              {t('footer.tagline')}
             </p>
+            <DonateButton size="small" source="footer" className="mt-4" />
           </div>
 
           <div>
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white">
-              Features
+              {t('footer.learn')}
             </h3>
             <ul className="space-y-2 text-sm">
-              {FEATURE_LINKS.map(({ label, to }) => (
+              {NAV_LINKS.map(({ labelKey, to }) => (
                 <li key={to}>
-                  <Link to={to} className="transition-colors hover:text-white">
-                    {label}
+                  <Link to={to} className="transition-colors hover:text-white" {...prefetchOn(to)}>
+                    {t(labelKey)}
                   </Link>
                 </li>
               ))}
@@ -45,13 +43,13 @@ const Footer = () => {
 
           <div>
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white">
-              Company
+              {t('footer.company')}
             </h3>
             <ul className="space-y-2 text-sm">
-              {FOOTER_LINKS.map(({ label, to }) => (
+              {FOOTER_LINKS.map(({ labelKey, to }) => (
                 <li key={to}>
-                  <Link to={to} className="transition-colors hover:text-white">
-                    {label}
+                  <Link to={to} className="transition-colors hover:text-white" {...prefetchOn(to)}>
+                    {t(labelKey)}
                   </Link>
                 </li>
               ))}
@@ -60,7 +58,7 @@ const Footer = () => {
         </div>
 
         <p className="mt-8 border-t border-white/10 pt-6 text-center text-sm text-brand-200">
-          © {new Date().getFullYear()} We Learn Greek. All rights reserved.
+          {t('footer.rights', { year: new Date().getFullYear() })}
         </p>
       </div>
     </footer>

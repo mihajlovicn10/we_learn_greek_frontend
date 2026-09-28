@@ -1,6 +1,8 @@
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 function Pagination({ currentPage, totalPages, onPageChange }) {
+  const { t } = useTranslation();
   if (totalPages <= 1) return null;
 
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -8,14 +10,14 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
   return (
     <nav
       className="mt-8 flex flex-wrap items-center justify-center gap-2"
-      aria-label="Pagination"
+      aria-label={t('common.pagination')}
     >
       <button
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-        aria-label="Previous page"
+        aria-label={t('common.previousPage')}
       >
         <FaChevronLeft size={14} />
       </button>
@@ -41,7 +43,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-        aria-label="Next page"
+        aria-label={t('common.nextPage')}
       >
         <FaChevronRight size={14} />
       </button>

@@ -1,8 +1,8 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 export function FadeIn({ children, delay = 0, className = '' }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-48px' }}
@@ -10,13 +10,13 @@ export function FadeIn({ children, delay = 0, className = '' }) {
       className={className}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 
 export function StaggerChildren({ children, className = '', stagger = 0.1 }) {
   return (
-    <motion.div
+    <m.div
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: '-48px' }}
@@ -27,13 +27,13 @@ export function StaggerChildren({ children, className = '', stagger = 0.1 }) {
       className={className}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 
 export function StaggerItem({ children, className = '' }) {
   return (
-    <motion.div
+    <m.div
       variants={{
         hidden: { opacity: 0, y: 22 },
         visible: {
@@ -45,6 +45,6 @@ export function StaggerItem({ children, className = '' }) {
       className={className}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }

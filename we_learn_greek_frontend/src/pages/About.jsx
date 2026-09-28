@@ -1,76 +1,53 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
+import { Trans, useTranslation } from 'react-i18next';
 import { PageLayout } from '../components/layout';
 import { Card } from '../components/ui';
 import { ROUTES } from '../constants/routes';
+import { CONTACT_EMAIL } from '../config';
 
-const features = [
-  {
-    title: 'Dictionary',
-    description: 'Comprehensive Greek-English dictionary with example sentences and usage notes.',
-  },
-  {
-    title: 'Verb Conjugations',
-    description: 'Complete verb conjugation tables for all tenses and moods.',
-  },
-  {
-    title: 'Greek to Greek',
-    description: 'Native Greek definitions to enhance your understanding.',
-  },
-  {
-    title: 'Transparent Words',
-    description: 'Discover words that are similar across different languages.',
-  },
-];
+const LINK_CLASS = 'font-medium text-brand-600 hover:text-brand-700';
+const FEATURES = ['nouns', 'verbs', 'greekDefinitions', 'wordRoots', 'myWords'];
 
 const About = () => {
+  const { t } = useTranslation();
+
   return (
-    <PageLayout title="About We Learn Greek" narrow>
+    <PageLayout title={t('about.title')} narrow>
       <Card padding="lg">
         <section className="mb-8 text-center">
-          <h2 className="mb-4 font-display text-xl font-semibold text-brand-900">Our Mission</h2>
-          <p className="leading-relaxed text-gray-600">
-            We Learn Greek is dedicated to making Modern Greek language learning accessible,
-            engaging, and effective for learners worldwide. Our platform combines comprehensive
-            learning tools with an intuitive interface to help you master the Greek language.
-          </p>
+          <h2 className="mb-4 font-display text-xl font-semibold text-brand-900">
+            {t('about.missionTitle')}
+          </h2>
+          <p className="leading-relaxed text-gray-600">{t('about.mission')}</p>
         </section>
 
         <section className="mb-8">
           <h2 className="mb-6 text-center font-display text-xl font-semibold text-brand-900">
-            Features
+            {t('about.featuresTitle')}
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {features.map((feature) => (
-              <Card
-                key={feature.title}
-                padding="sm"
-                hover
-                className="bg-surface-muted text-center"
-              >
-                <h3 className="mb-2 font-display text-lg font-semibold text-brand-700">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-gray-600">{feature.description}</p>
+            {FEATURES.map((key) => (
+              <Card key={key} padding="sm" hover className="bg-surface-muted text-center">
+                <h3 className="mb-2 font-display text-lg font-semibold text-brand-700">{t(`nav.${key}`)}</h3>
+                <p className="text-sm text-gray-600">{t(`about.features.${key}`)}</p>
               </Card>
             ))}
           </div>
         </section>
 
         <section className="text-center">
-          <h2 className="mb-4 font-display text-xl font-semibold text-brand-900">Contact Us</h2>
+          <h2 className="mb-4 font-display text-xl font-semibold text-brand-900">
+            {t('about.contactTitle')}
+          </h2>
           <p className="text-gray-600">
-            Have questions or suggestions? We&apos;d love to hear from you! Visit our{' '}
-            <Link to={ROUTES.contact} className="font-medium text-brand-600 hover:text-brand-700">
-              Contact page
-            </Link>{' '}
-            or email us at{' '}
-            <a
-              href="mailto:contact@welearngreek.com"
-              className="font-medium text-brand-600 hover:text-brand-700"
-            >
-              contact@welearngreek.com
-            </a>
+            <Trans
+              i18nKey="about.contactText"
+              values={{ email: CONTACT_EMAIL }}
+              components={{
+                link: <Link to={ROUTES.contact} className={LINK_CLASS} />,
+                email: <a href={`mailto:${CONTACT_EMAIL}`} className={LINK_CLASS} />,
+              }}
+            />
           </p>
         </section>
       </Card>

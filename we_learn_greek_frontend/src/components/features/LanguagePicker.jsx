@@ -1,22 +1,32 @@
-function LanguagePicker({ languages, onSelect }) {
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { prefetchOn } from '../../routes/pages';
+
+function LanguagePicker({ languages, linkTo }) {
+  const { t } = useTranslation();
   return (
-    <div className="mx-auto flex max-w-4xl flex-wrap justify-center gap-5">
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
       {languages.map((lang) => (
-        <button
+        <Link
           key={lang.code}
-          type="button"
-          onClick={() => onSelect(lang.code)}
-          className="group flex w-36 flex-col items-center rounded-2xl bg-white/20 p-6 transition-transform hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          to={linkTo(lang.code)}
+          {...prefetchOn(linkTo(lang.code))}
+          className="group flex flex-col items-center rounded-2xl bg-surface p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         >
-          <div className="mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-white/30">
+          <div className="mb-3 h-16 w-16 overflow-hidden rounded-full ring-2 ring-brand-100">
             <img
               src={lang.flag}
-              alt={`${lang.name} flag`}
+              alt=""
+              width={64}
+              height={64}
+              loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover"
             />
           </div>
-          <span className="text-base font-semibold text-white">{lang.name}</span>
-        </button>
+          <span className="font-semibold text-brand-900">{t(`wordRoots.languages.${lang.code}`)}</span>
+          <span className="mt-0.5 text-xs text-gray-500">{lang.example}</span>
+        </Link>
       ))}
     </div>
   );

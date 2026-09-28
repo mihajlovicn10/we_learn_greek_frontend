@@ -1,0 +1,458 @@
+{
+  "common": {
+    "siteName": "We Learn Greek",
+    "loadingPage": "Loading page…",
+    "demoData": "Demo data — the API is unreachable.",
+    "listen": "Listen to pronunciation",
+    "listenTo": "Listen to {{word}}",
+    "save": "Save",
+    "saveToMyWords": "Save to My Words",
+    "search": "Search",
+    "backToHome": "Back to Home",
+    "pagination": "Pagination",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastUpdated": "Last updated: {{date}}",
+    "showDetails": "Show details",
+    "hideDetails": "Hide details",
+    "searchPlaceholder": "Search..."
+  },
+  "language": {
+    "label": "Language",
+    "switchTo": "Switch language to {{language}}",
+    "en": "English",
+    "el": "Ελληνικά"
+  },
+  "nav": {
+    "nouns": "Nouns",
+    "verbs": "Verbs",
+    "greekDefinitions": "Greek Definitions",
+    "wordRoots": "Word Roots",
+    "myWords": "My Words",
+    "support": "Support",
+    "logIn": "Log in",
+    "logOut": "Log out",
+    "signUp": "Sign up free",
+    "account": "Account",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "footer": {
+    "tagline": "Learn Modern Greek with dictionaries, conjugations, declensions, and more.",
+    "learn": "Learn",
+    "company": "Company",
+    "about": "About",
+    "contact": "Contact",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "supportUs": "Support Us",
+    "rights": "© {{year}} We Learn Greek. All rights reserved."
+  },
+  "donate": {
+    "supportUs": "Support Us",
+    "support": "Support",
+    "makeDonation": "Make a Donation",
+    "supportProject": "Support We Learn Greek"
+  },
+  "search": {
+    "keyboardShow": "Show Greek keyboard",
+    "keyboardHide": "Hide Greek keyboard",
+    "keyboardTitle": "Greek keyboard",
+    "addAccent": "Add accent to the last vowel",
+    "space": "space",
+    "deleteLast": "Delete last letter",
+    "noMatchHint": "Check the spelling, try fewer letters, or clear the filter."
+  },
+  "grammar": {
+    "case": "Case",
+    "singular": "Singular",
+    "plural": "Plural",
+    "cases": {
+      "nominative": {
+        "label": "Nominative",
+        "short": "Nom.",
+        "hint": "The subject: who or what does the action."
+      },
+      "genitive": {
+        "label": "Genitive",
+        "short": "Gen.",
+        "hint": "Possession: whose? of what?"
+      },
+      "accusative": {
+        "label": "Accusative",
+        "short": "Acc.",
+        "hint": "The object, and after most prepositions (σε, με, για…)."
+      },
+      "vocative": {
+        "label": "Vocative",
+        "short": "Voc.",
+        "hint": "Calling or addressing someone directly."
+      }
+    },
+    "tenses": {
+      "present": {
+        "label": "Present",
+        "hint": "Happening now, or habitually."
+      },
+      "imperfect": {
+        "label": "Imperfect",
+        "hint": "Ongoing or repeated in the past."
+      },
+      "aorist": {
+        "label": "Aorist",
+        "hint": "A single, completed action in the past."
+      },
+      "perfect": {
+        "label": "Perfect",
+        "hint": "Done, and the result matters now (έχω + form)."
+      },
+      "plusperfect": {
+        "label": "Pluperfect",
+        "hint": "Done before another past moment (είχα + form)."
+      },
+      "future": {
+        "label": "Future",
+        "hint": "Will happen (θα + verb)."
+      }
+    },
+    "persons": {
+      "first_singular": "I",
+      "second_singular": "you",
+      "third_singular": "he/she/it",
+      "first_plural": "we",
+      "second_plural": "you (plural)",
+      "third_plural": "they"
+    },
+    "gender": {
+      "masculine": "masculine",
+      "feminine": "feminine",
+      "neuter": "neuter"
+    },
+    "noConjugation": "No conjugation available for this verb yet."
+  },
+  "nouns": {
+    "title": "Greek Nouns",
+    "subtitle": "Search any noun to see all its cases in the singular and plural, with the right article.",
+    "placeholder": "Search a noun, e.g. άνθρωπος or anthropos",
+    "hint": "Type in Greek or Latin letters — accents are optional. Open a noun to see its declension.",
+    "filterLabel": "Filter by gender",
+    "allGenders": "All genders",
+    "masculine": "Masculine (ο)",
+    "feminine": "Feminine (η)",
+    "neuter": "Neuter (το)",
+    "show": "Show cases",
+    "hide": "Hide cases",
+    "noMatch": "No nouns match “{{query}}”",
+    "empty": "No nouns yet",
+    "emptyMessage": "Nouns will appear here once they are added."
+  },
+  "verbs": {
+    "title": "Greek Verbs",
+    "subtitle": "Search any verb to see it conjugated in every tense, with a note on when each tense is used.",
+    "placeholder": "Search a verb, e.g. γράφω or grafo",
+    "hint": "Type in Greek or Latin letters — accents are optional. Open a verb to see its conjugation.",
+    "filterLabel": "Filter by verb type",
+    "allTypes": "All verb types",
+    "type": "Type {{type}}",
+    "show": "Show conjugation",
+    "hide": "Hide conjugation",
+    "noMatch": "No verbs match “{{query}}”",
+    "empty": "No verbs yet",
+    "emptyMessage": "Verbs will appear here once they are added."
+  },
+  "definitions": {
+    "title": "Greek Definitions",
+    "subtitle": "Greek words explained in simple Greek. Once you know the basics, learning from Greek itself builds real fluency.",
+    "placeholder": "Search a word, e.g. θάλασσα or thalassa",
+    "hint": "Tip: tap the speaker to hear the word, then read the definition aloud.",
+    "noMatch": "No words match “{{query}}”",
+    "noMatchMessage": "Check the spelling or try fewer letters.",
+    "empty": "No definitions yet",
+    "emptyMessage": "Definitions will appear here once they are added."
+  },
+  "wordRoots": {
+    "title": "Greek Word Roots",
+    "subtitle": "You already know hundreds of Greek words. Pick your language to see Greek words that live on in it, with their origins and examples.",
+    "languages": {
+      "en": "English",
+      "fr": "French",
+      "de": "German",
+      "es": "Spanish",
+      "ru": "Russian",
+      "it": "Italian",
+      "other": "Other Languages"
+    },
+    "listTitle": "Greek Words in {{language}}",
+    "listSubtitle": "Greek words that live on in {{language}}. Open one to see where it comes from and how it is used.",
+    "otherLanguages": "Other languages",
+    "placeholder": "Search in Greek or {{language}}",
+    "filterLabel": "Filter by category",
+    "allCategories": "All categories",
+    "show": "Show details",
+    "hide": "Hide details",
+    "pronunciation": "Pronunciation",
+    "etymology": "Etymology",
+    "example": "Example",
+    "listenGreek": "Listen to Greek pronunciation",
+    "listenLanguage": "Listen to {{language}} pronunciation",
+    "listenGreekExample": "Listen to the Greek example",
+    "listenLanguageExample": "Listen to the {{language}} example",
+    "noMatch": "No words match your search. Check the spelling or clear the category filter.",
+    "empty": "No words found for this language yet.",
+    "chooseAnother": "Choose another language"
+  },
+  "myWords": {
+    "title": "My Words",
+    "subtitle": "Your personal Greek dictionary. Save words as you study, then come back to review them.",
+    "addTitle": "Add a word",
+    "addHintPrefill": "Check the details for “{{word}}”, add its meaning, and save.",
+    "addHint": "Tip: tap “Save” on any noun, verb, or definition to add it here in one step.",
+    "greekWord": "Greek word",
+    "greekPlaceholder": "e.g. Καλημέρα",
+    "pronunciation": "Pronunciation",
+    "pronunciationPlaceholder": "e.g. Kaliméra",
+    "meaning": "Meaning in your language",
+    "meaningPlaceholder": "e.g. Good morning",
+    "pronunciationTip": "Leave pronunciation empty to use the suggestion shown in the field.",
+    "showKeyboard": "Show Greek keyboard",
+    "hideKeyboard": "Hide Greek keyboard",
+    "saveWord": "Save word",
+    "saving": "Saving...",
+    "missingFields": "Add the Greek word and its meaning.",
+    "savedWords": "Saved words",
+    "searchPlaceholder": "Search your words...",
+    "colGreek": "Greek",
+    "colPronunciation": "Pronunciation",
+    "colMeaning": "Meaning",
+    "colAdded": "Added",
+    "colActions": "Actions",
+    "edit": "Edit word",
+    "editWord": "Edit {{word}}",
+    "delete": "Delete word",
+    "deleteWord": "Delete {{word}}",
+    "saveChanges": "Save changes",
+    "cancel": "Cancel",
+    "noMatches": "No matches",
+    "noMatchesMessage": "No saved words match your search.",
+    "empty": "No saved words yet",
+    "emptyMessage": "Add your first word above, or tap “Save” on any noun, verb, or definition.",
+    "confirmDelete": "Delete “{{word}}” from My Words?",
+    "saved": "“{{word}}” saved to My Words",
+    "updated": "Word updated",
+    "deleted": "Word deleted",
+    "saveFailed": "Failed to save word. Please try again.",
+    "updateFailed": "Failed to update word",
+    "deleteFailed": "Failed to delete word",
+    "loadFailed": "Failed to load your words.",
+    "allFieldsRequired": "All fields are required",
+    "demoSave": "Saving requires a connected API (demo mode)",
+    "demoEdit": "Editing requires a connected API (demo mode)",
+    "demoDelete": "Delete requires a connected API (demo mode)"
+  },
+  "home": {
+    "pageTitle": "Learn Modern Greek for free",
+    "heroTitle": "Learn Modern Greek, one word at a time",
+    "heroSubtitle": "Free tools to look up any noun or verb, understand every form, and build your own Greek dictionary.",
+    "startWithVerbs": "Start with verbs",
+    "openMyWords": "Open My Words",
+    "startHere": "Start here",
+    "howToUse": "How to use We Learn Greek",
+    "steps": {
+      "lookUp": {
+        "title": "Look up a word",
+        "description": "Search any noun or verb, in Greek or Latin letters. Accents are optional."
+      },
+      "understand": {
+        "title": "Understand every form",
+        "description": "See all cases and tenses at a glance, with the article, the pronouns, and a plain-English note on when to use each one."
+      },
+      "save": {
+        "title": "Save it to My Words",
+        "description": "Tap “Save” on any word to build your own dictionary, then come back to review it."
+      }
+    },
+    "everything": "Everything in one place",
+    "open": "Open {{tool}} →",
+    "tools": {
+      "nouns": "Every case in the singular and plural, with the right article.",
+      "verbs": "Full conjugations in six tenses, with notes on when each tense is used.",
+      "greekDefinitions": "Greek words explained in simple Greek, for immersion once you know the basics.",
+      "wordRoots": "Greek words you already know from English, French, German, Spanish, and more.",
+      "myWords": "Your personal dictionary with pronunciation and meanings, saved to your account."
+    },
+    "whyTitle": "Why we built this",
+    "whyP1": "We Learn Greek was born from a simple idea: learning Greek should be approachable and self-paced. Instead of a classroom, you get clear tools for the parts of Greek that are hardest to memorize: noun cases, verb forms, and vocabulary.",
+    "whyP2": "Greek is also the origin of countless words in science, philosophy, and everyday speech. You already know more Greek than you think.",
+    "readStory": "Read our story →",
+    "supportTitle": "Help keep Greek learning free",
+    "supportText": "We Learn Greek is free and ad-free for every learner. Your support pays for hosting and helps us add more words, more languages, and new ways to practice."
+  },
+  "support": {
+    "title": "Support We Learn Greek",
+    "subtitle": "We Learn Greek is free and ad-free. Your support keeps it that way and helps it grow.",
+    "intro": "We believe learning Greek should be open to everyone, whether you are preparing to move to Greece, reconnecting with your heritage, or simply curious about the language behind so much of the world's vocabulary. Every contribution, large or small, goes directly into keeping the platform online and making it better.",
+    "comingSoon": "Online donations are coming soon. In the meantime, if you would like to support us or partner with us, please <link>get in touch</link>.",
+    "impactTitle": "What your support makes possible",
+    "impact": {
+      "running": {
+        "title": "Keep it running",
+        "description": "Hosting, the database, and the API that power every search, table, and saved word."
+      },
+      "content": {
+        "title": "Grow the content",
+        "description": "More verbs and nouns with full conjugations and declensions, more Greek definitions, and more languages for Word Roots."
+      },
+      "features": {
+        "title": "Build new features",
+        "description": "Practice modes and new tools that help learners move from looking words up to actually using them."
+      }
+    },
+    "partnersTitle": "Schools, organizations & sponsors",
+    "partnersText": "Interested in partnering, sponsoring content, or using We Learn Greek with your students? Email us at <email>{{email}}</email>."
+  },
+  "about": {
+    "title": "About We Learn Greek",
+    "missionTitle": "Our Mission",
+    "mission": "We Learn Greek is dedicated to making Modern Greek language learning accessible, engaging, and effective for learners worldwide. Our platform combines comprehensive learning tools with an intuitive interface to help you master the Greek language.",
+    "featuresTitle": "Features",
+    "features": {
+      "nouns": "Every case in the singular and plural, with the right article and what each case is for.",
+      "verbs": "Conjugations in six tenses, with pronouns and a note on when each tense is used.",
+      "greekDefinitions": "Greek words explained in simple Greek, for learning through immersion.",
+      "wordRoots": "Greek words that live on in English, French, German, Spanish, Russian, and Italian.",
+      "myWords": "A personal dictionary you build as you study, saved to your account."
+    },
+    "contactTitle": "Contact Us",
+    "contactText": "Have questions or suggestions? We'd love to hear from you! Visit our <link>Contact page</link> or email us at <email>{{email}}</email>"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "intro": "Have questions, suggestions, or feedback? We'd love to hear from you! Fill out the form below and we'll get back to you as soon as possible.",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "Your email address",
+    "subject": "Subject",
+    "subjectPlaceholder": "Subject of your message",
+    "message": "Message",
+    "messagePlaceholder": "Your message",
+    "sending": "Sending...",
+    "send": "Send Message",
+    "sendViaEmail": "Send via Email App",
+    "sent": "Message sent successfully!",
+    "failed": "Failed to send message. Please email us at {{email}}.",
+    "otherWays": "Other Ways to Reach Us",
+    "emailLabel": "Email:"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "loginTitle": "Log in to your account",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "loggingIn": "Logging in...",
+    "logIn": "Log in",
+    "noAccount": "Don't have an account? <link>Register here</link>",
+    "accountCreated": "Account created! Log in to get started.",
+    "invalidResponse": "Invalid login response from server.",
+    "loginFailed": "Login failed. Please check your credentials and try again.",
+    "registerTitle": "Create an account",
+    "firstName": "First name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastName": "Last name",
+    "lastNamePlaceholder": "Enter your last name",
+    "registerEmailPlaceholder": "Enter your email address",
+    "passwordCreatePlaceholder": "Create a password",
+    "confirmPassword": "Confirm password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "passwordsMismatch": "Passwords do not match",
+    "registering": "Registering...",
+    "register": "Register",
+    "registerFailed": "Registration failed. Please try again.",
+    "haveAccount": "Already have an account? <link>Log in here</link>",
+    "welcome": "Welcome to We Learn Greek, {{name}}!",
+    "sessionExpired": "Your session has expired. Please log in again."
+  },
+  "errors": {
+    "unreachable": "We can't reach the server right now. Please check your connection and try again shortly.",
+    "generic": "Something went wrong. Please try again.",
+    "loadFailed": "Failed to load data.",
+    "boundaryTitle": "Oops! Something went wrong",
+    "boundaryText": "An unexpected error occurred. Please refresh the page and try again.",
+    "refresh": "Refresh Page"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "subtitle": "The page you are looking for does not exist or has moved."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "introTitle": "Introduction",
+    "intro": "At We Learn Greek, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.",
+    "collectTitle": "Information We Collect",
+    "personalTitle": "Personal Information",
+    "personalIntro": "We collect personal information only when you voluntarily provide it:",
+    "personal": [
+      "When you register: your name, email address, and password (stored hashed)",
+      "When you use the dictionary: the words you choose to save",
+      "When you contact us: your name, email address, and message"
+    ],
+    "usageTitle": "Usage Information",
+    "usage": [
+      "IP address and browser type",
+      "Device information",
+      "Pages visited and time spent"
+    ],
+    "analytics": "We use privacy-friendly, cookieless analytics that collect aggregate usage statistics without tracking you across websites. Donations are processed by a third-party payment provider; we never see or store your payment details.",
+    "useTitle": "How We Use Your Information",
+    "use": [
+      "To provide and maintain our service",
+      "To notify you about changes to our service",
+      "To provide customer support",
+      "To improve our service and monitor usage"
+    ],
+    "rightsTitle": "Your Rights",
+    "rights": [
+      "Access your personal data",
+      "Correct inaccurate personal data",
+      "Request deletion of your personal data",
+      "Object to or restrict processing"
+    ],
+    "contactTitle": "Contact Us",
+    "contact": "Questions about this policy? Email <email>{{email}}</email> or visit our <link>Contact page</link>."
+  },
+  "terms": {
+    "title": "Terms and Conditions",
+    "agreementTitle": "1. Agreement to Terms",
+    "agreement": "By accessing and using We Learn Greek, you agree to be bound by these Terms and Conditions and our Privacy Policy.",
+    "accountsTitle": "2. User Accounts",
+    "accounts": "When you create an account, you must provide accurate and complete information. You are responsible for safeguarding your account credentials.",
+    "accountsList": [
+      "Maintaining confidentiality of your password",
+      "Restricting access to your account",
+      "All activities under your account"
+    ],
+    "ipTitle": "3. Intellectual Property",
+    "ip": "The Service and its original content are owned by We Learn Greek and protected by applicable intellectual property laws.",
+    "prohibitedTitle": "4. Prohibited Uses",
+    "prohibited": [
+      "Violating applicable laws or regulations",
+      "Impersonating other users",
+      "Unauthorized access to systems or data",
+      "Unauthorized commercial use of the Service"
+    ],
+    "liabilityTitle": "5. Limitation of Liability",
+    "liability": "We Learn Greek shall not be liable for indirect, incidental, or consequential damages arising from your use of the Service.",
+    "contactTitle": "6. Contact Us",
+    "contact": "Questions about these Terms? <link>Contact us</link>."
+  },
+  "list": {
+    "showing": "Showing {{shown}} of {{total}}",
+    "loadMore": "Load more",
+    "loadingMore": "Loading more…",
+    "end": "You’ve reached the end — {{total}} in total.",
+    "loadMoreFailed": "Couldn’t load more.",
+    "retry": "Try again",
+    "backToTop": "Back to top"
+  }
+}

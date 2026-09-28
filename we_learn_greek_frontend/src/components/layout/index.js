@@ -5,3 +5,4 @@ export { default as Section } from './Section';
 export { default as AuthLayout } from './AuthLayout';
 export { default as PageLoader } from './PageLoader';
 export { default as PageTransition } from './PageTransition';
+export { default as LanguageSwitcher } from './LanguageSwitcher';

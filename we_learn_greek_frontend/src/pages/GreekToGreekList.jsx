@@ -1,134 +1,101 @@
-import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { greekToGreekAPI, normalizeListResponse, getPaginationMeta } from '../services';
-import { showToast } from '../components/common/Toast';
-import { PageLayout } from '../components/layout';
-import {
-  Badge,
-  Card,
-  EmptyState,
-  FilterSelect,
-  Pagination,
-  SearchBar,
-  SkeletonList,
-} from '../components/ui';
-import { useDebouncedValue } from '../hooks/useDebouncedValue';
+import { useTranslation } from 'react-i18next';
+import { greekToGreekAPI } from '../services/greekToGreek';
+import { InfiniteScroll, ListPageShell, SaveWordButton, WordTitle } from '../components/features';
+import { Alert, Card, EmptyState, SkeletonList } from '../components/ui';
+import { AnimatedItem } from '../components/motion';
+import { useListData } from '../hooks/useListData';
+import { useSearchQuery } from '../hooks/useSearchQuery';
+import { useTextToSpeech } from '../hooks/useTextToSpeech';
+import { matchesGreek } from '../utils/greek';
+import { demoGreekToGreek } from '../data/demo';
 
-const difficulties = ['Easy', 'Medium', 'Hard'];
-const categories = ['Noun', 'Verb', 'Adjective', 'Adverb', 'Other'];
+const PAGE_SIZE = 24;
 
+const demoFilterFn = (entry, term) =>
+  matchesGreek(entry.word, term) || matchesGreek(entry.explanation, term);
+
+/** Monolingual dictionary: Greek words explained in simple Greek. API fields: word, explanation. */
 function GreekToGreekList() {
-  const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearch = useDebouncedValue(searchTerm);
-  const [filters, setFilters] = useState({ difficulty: '', category: '' });
+  const [query, setQuery] = useSearchQuery();
+  const { speak } = useTextToSpeech();
+  const { t } = useTranslation();
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['greek-to-greek', page, debouncedSearch, filters],
-    queryFn: async () => {
-      if (debouncedSearch.trim()) {
-        return greekToGreekAPI.searchWords(debouncedSearch, page);
-      }
-      return greekToGreekAPI.getAllWords(page, {
-        ordering: 'word',
-        ...filters,
-      });
-    },
-    placeholderData: (prev) => prev,
+  const {
+    items: entries,
+    total,
+    loading,
+    refreshing,
+    error,
+    isDemo,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    loadMoreError,
+  } = useListData({
+    queryKey: ['greek-to-greek'],
+    fetchFn: (page, params) => greekToGreekAPI.getAllWords(page, params),
+    pageSize: PAGE_SIZE,
+    searchTerm: query,
+    demoItems: demoGreekToGreek,
+    demoFilterFn,
   });
 
-  useEffect(() => {
-    if (isError) showToast.error('Failed to fetch words');
-  }, [isError]);
-
-  const words = normalizeListResponse(data);
-  const totalPages = getPaginationMeta(data, 12).totalPages;
-
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
-    setPage(1);
-  };
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    setPage(1);
-  };
-
   return (
-    <PageLayout title="Greek to Greek Dictionary" background="muted">
-      <div className="mb-8 space-y-4">
-        <form onSubmit={handleSearchSubmit}>
-          <SearchBar
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search words..."
-            showButton
-            className="max-w-xl"
-          />
-        </form>
+    <ListPageShell
+      title={t('definitions.title')}
+      subtitle={t('definitions.subtitle')}
+      query={query}
+      onQueryChange={setQuery}
+      searchPlaceholder={t('definitions.placeholder')}
+      searchHint={t('definitions.hint')}
+    >
+      {isDemo && (
+        <Alert variant="info" className="mb-4">
+          {t('common.demoData')}
+        </Alert>
+      )}
 
-        <div className="flex flex-wrap gap-4">
-          <FilterSelect
-            name="difficulty"
-            value={filters.difficulty}
-            onChange={handleFilterChange}
-            className="min-w-[160px] bg-white text-gray-900"
-          >
-            <option value="">All Difficulties</option>
-            {difficulties.map((diff) => (
-              <option key={diff} value={diff.toLowerCase()}>
-                {diff}
-              </option>
-            ))}
-          </FilterSelect>
-
-          <FilterSelect
-            name="category"
-            value={filters.category}
-            onChange={handleFilterChange}
-            className="min-w-[160px] bg-white text-gray-900"
-          >
-            <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat.toLowerCase()}>
-                {cat}
-              </option>
-            ))}
-          </FilterSelect>
-        </div>
-      </div>
-
-      {isLoading ? (
-        <SkeletonList count={6} />
-      ) : words.length === 0 ? (
-        <EmptyState message="No words found. Try adjusting your search or filters." />
+      {loading ? (
+        <SkeletonList count={4} />
+      ) : error ? (
+        <Alert variant="error">{error}</Alert>
+      ) : entries.length === 0 ? (
+        <EmptyState
+          title={query ? t('definitions.noMatch', { query }) : t('definitions.empty')}
+          message={query ? t('definitions.noMatchMessage') : t('definitions.emptyMessage')}
+        />
       ) : (
-        <>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {words.map((word) => (
-              <Card key={word.id} hover>
-                <h2 className="mb-2 font-display text-xl font-bold text-brand-900">{word.word}</h2>
-                <div className="mb-4 flex flex-wrap gap-2">
-                  <Badge variant="brand">{word.category}</Badge>
-                  <Badge variant="accent">{word.difficulty}</Badge>
-                </div>
-                <p className="mb-1 text-sm font-semibold text-gray-700">Definition</p>
-                <p className="mb-4 text-gray-600">{word.definition}</p>
-                {word.example && (
-                  <>
-                    <p className="mb-1 text-sm font-semibold text-gray-700">Example</p>
-                    <p className="italic text-gray-600">{word.example}</p>
-                  </>
-                )}
-              </Card>
+        <div
+          className={`transition-opacity duration-200 ${refreshing ? 'opacity-60' : ''}`}
+          aria-busy={refreshing}
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            {entries.map((entry, index) => (
+              <AnimatedItem key={entry.id} index={index} batchSize={PAGE_SIZE}>
+                <Card className="flex h-full flex-col gap-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <WordTitle greek={entry.word} onSpeak={() => speak(entry.word)} />
+                    <SaveWordButton greek={entry.word} />
+                  </div>
+                  <p className="text-gray-700" lang="el">
+                    {entry.explanation}
+                  </p>
+                </Card>
+              </AnimatedItem>
             ))}
           </div>
-
-          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
-        </>
+          <InfiniteScroll
+            shown={entries.length}
+            pageSize={PAGE_SIZE}
+            total={total}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            fetchNextPage={fetchNextPage}
+            error={loadMoreError}
+          />
+        </div>
       )}
-    </PageLayout>
+    </ListPageShell>
   );
 }
 

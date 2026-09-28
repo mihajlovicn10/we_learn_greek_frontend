@@ -2,6 +2,9 @@ const ACCESS_KEY = 'accessToken';
 const REFRESH_KEY = 'refreshToken';
 const USER_KEY = 'userData';
 
+/** Fired on window when the API rejects the stored session (refresh failed or token missing). */
+export const SESSION_EXPIRED_EVENT = 'auth:session-expired';
+
 /** @deprecated Legacy keys — cleared on session init */
 const LEGACY_KEYS = ['token', 'auth_token'];
 
@@ -51,6 +54,12 @@ export const authStorage = {
     } catch {
       // ignore
     }
+  },
+
+  /** Clear a session the server no longer accepts and let the app react (AuthContext listens). */
+  expireSession() {
+    this.clearSession();
+    window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
   },
 
   clearLegacyKeys() {

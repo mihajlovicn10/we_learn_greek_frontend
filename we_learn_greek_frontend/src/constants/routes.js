@@ -9,32 +9,36 @@ export const ROUTES = {
   contact: '/contact',
   privacy: '/privacy',
   terms: '/terms',
+  support: '/support',
 
-  dictionary: '/dictionary',
-  savedWords: '/dictionary/words',
-
-  declinator: '/declinator',
-  declinatorNouns: '/declinator/nouns',
-
-  verbSearch: '/verb-search',
-  conjugatorVerbs: '/conjugator/verbs',
-
+  nouns: '/nouns',
+  verbs: '/verbs',
   greekToGreek: '/greek-to-greek',
-
-  transparentLanguageSelect: '/transparent-language-select',
-  transparentWords: (language) => `/transparent-words/${language}`,
+  wordRoots: '/word-roots',
+  wordRootsLanguage: (language) => `/word-roots/${language}`,
+  myWords: '/my-words',
 };
 
-/** Legacy / bookmarked paths that redirect to canonical routes */
+/** Old paths (earlier releases, bookmarks, shared links) → canonical routes. */
 export const LEGACY_REDIRECTS = {
-  '/conjugator': ROUTES.verbSearch,
+  '/declinator': ROUTES.nouns,
+  '/declinator/nouns': ROUTES.nouns,
+  '/noun-search': ROUTES.nouns,
+  '/conjugator': ROUTES.verbs,
+  '/conjugator/verbs': ROUTES.verbs,
+  '/verb-search': ROUTES.verbs,
   '/greek-to-greek-dictionary': ROUTES.greekToGreek,
-  '/transparent-greek-words': ROUTES.transparentLanguageSelect,
-  '/noun-search': ROUTES.declinator,
+  '/transparent-language-select': ROUTES.wordRoots,
+  '/transparent-greek-words': ROUTES.wordRoots,
+  '/dictionary': ROUTES.myWords,
+  '/dictionary/words': ROUTES.myWords,
 };
 
-export const MORE_MENU_ROUTES = {
-  about: ROUTES.about,
-  privacy: ROUTES.privacy,
-  contact: ROUTES.contact,
-};
+/** Main navigation, in display order. `labelKey` is a translation key. */
+export const NAV_LINKS = [
+  { labelKey: 'nav.nouns', to: ROUTES.nouns },
+  { labelKey: 'nav.verbs', to: ROUTES.verbs },
+  { labelKey: 'nav.greekDefinitions', to: ROUTES.greekToGreek },
+  { labelKey: 'nav.wordRoots', to: ROUTES.wordRoots },
+  { labelKey: 'nav.myWords', to: ROUTES.myWords },
+];
