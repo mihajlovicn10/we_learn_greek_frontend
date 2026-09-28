@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authStorage } from '../utils/authStorage';
+import { authAPI } from '../services/auth';
 import { ROUTES } from '../constants/routes';
 
 const AuthContext = createContext(null);
@@ -38,6 +39,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const logout = useCallback(() => {
+    // Revoke the refresh token server-side. Best effort: the local session is cleared
+    // regardless, so an offline or failed request never traps the user in a session.
+    const refresh = authStorage.getRefreshToken();
+    if (refresh) {
+      authAPI.logout(refresh).catch(() => {});
+    }
     authStorage.clearSession();
     setAuth({ user: null, isAuthenticated: false });
     navigate(ROUTES.login);

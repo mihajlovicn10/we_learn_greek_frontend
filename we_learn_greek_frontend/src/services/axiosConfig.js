@@ -22,6 +22,35 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Refresh tokens rotate: each refresh returns a new one and invalidates the old one.
+// Concurrent 401s must therefore share a single refresh request; a second request
+// with the same (now invalidated) token would fail and log the user out.
+let refreshPromise = null;
+
+function refreshSession() {
+  if (!refreshPromise) {
+    refreshPromise = (async () => {
+      const refreshToken = authStorage.getRefreshToken();
+      if (!refreshToken) {
+        throw new Error('No refresh token');
+      }
+      const response = await axios.post(`${API_URL}${ENDPOINTS.auth.tokenRefresh}`, {
+        refresh: refreshToken,
+      });
+      const { access, refresh } = response.data;
+      authStorage.setSession({
+        access,
+        refresh: refresh ?? refreshToken,
+        user: authStorage.getUser(),
+      });
+      return access;
+    })().finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
+}
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -34,22 +63,7 @@ axiosInstance.interceptors.response.use(
     originalRequest._retry = true;
 
     try {
-      const refreshToken = authStorage.getRefreshToken();
-      if (!refreshToken) {
-        throw new Error('No refresh token');
-      }
-
-      const response = await axios.post(`${API_URL}${ENDPOINTS.auth.tokenRefresh}`, {
-        refresh: refreshToken,
-      });
-
-      const { access } = response.data;
-      authStorage.setSession({
-        access,
-        refresh: refreshToken,
-        user: authStorage.getUser(),
-      });
-
+      const access = await refreshSession();
       originalRequest.headers.Authorization = `Bearer ${access}`;
       return axiosInstance(originalRequest);
     } catch (refreshError) {
