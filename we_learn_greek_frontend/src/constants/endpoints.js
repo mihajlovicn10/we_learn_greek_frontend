@@ -8,6 +8,7 @@ export const ENDPOINTS = {
     login: '/login/',
     token: '/token/',
     tokenRefresh: '/token/refresh/',
+    logout: '/logout/',
   },
   dictionary: {
     list: '/dictionary/',

@@ -1,14 +1,10 @@
+import { forwardRef } from 'react';
 import Input from './Input';
 
-function FormField({
-  label,
-  id,
-  name,
-  error,
-  variant = 'default',
-  className = '',
-  ...inputProps
-}) {
+const FormField = forwardRef(function FormField(
+  { label, id, name, error, variant = 'default', className = '', ...inputProps },
+  ref
+) {
   const fieldId = id || name;
 
   return (
@@ -18,7 +14,7 @@ function FormField({
           {label}
         </label>
       )}
-      <Input id={fieldId} name={name} variant={variant} error={error} {...inputProps} />
+      <Input ref={ref} id={fieldId} name={name} variant={variant} error={error} {...inputProps} />
       {error && (
         <p className="mt-1 text-sm text-red-600" role="alert">
           {error}
@@ -26,6 +22,6 @@ function FormField({
       )}
     </div>
   );
-}
+});
 
 export default FormField;

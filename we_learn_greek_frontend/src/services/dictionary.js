@@ -1,6 +1,6 @@
 import axiosInstance from './axiosConfig';
 import { ENDPOINTS } from '../constants/endpoints';
-import { buildQueryParams } from './apiHelpers';
+import { buildQueryParams, normalizeListResponse } from './apiHelpers';
 
 export const dictionaryAPI = {
   /** JWT required. Query: ?search=, ?ordering=, ?page=, ?page_size= */
@@ -45,3 +45,13 @@ export const dictionaryAPI = {
     return response.data;
   },
 };
+
+/** Every saved word, following DRF pagination (the dictionary API caps page_size at 100). */
+export async function fetchAllDictionaryWords() {
+  const words = [];
+  for (let page = 1; ; page += 1) {
+    const data = await dictionaryAPI.getAllWords(page, { page_size: 100 });
+    words.push(...normalizeListResponse(data));
+    if (!data?.next) return words;
+  }
+}

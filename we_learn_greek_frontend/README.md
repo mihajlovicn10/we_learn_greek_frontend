@@ -2,7 +2,7 @@
 
 React + Vite SPA for the [We Learn Greek](https://github.com/mihajlovicn10/we_learn_greek_frontend) learning platform: verb conjugations, noun declensions, personal dictionary, Greek-to-Greek glossary, and transparent words across languages.
 
-**Stack:** React 18 · Vite · React Router · TanStack Query · Tailwind CSS · Framer Motion · Axios (JWT)
+**Stack:** React 18 · Vite 7 · React Router 7 · TanStack Query · Tailwind CSS · Framer Motion · Axios (JWT)
 
 ## Local development
 
@@ -20,26 +20,28 @@ App runs at [http://localhost:3000](http://localhost:3000).
 | Variable | Description |
 |----------|-------------|
 | `VITE_API_URL` | Django REST API base URL, e.g. `https://your-api.onrender.com/api` |
-| `VITE_ENABLE_DEMO_DATA` | `true` = fallback to bundled demo data if API is down. Set `false` in production. |
+| `VITE_ENABLE_DEMO_DATA` | `true` = fall back to bundled demo data if the API is down. Off unless exactly `true`; leave unset in production. |
+| `VITE_SITE_URL` | Public site URL for canonical and Open Graph tags. Defaults to Vercel's production domain. |
+| `VITE_CONTACT_EMAIL` | Contact address shown on the site. Default `contact@welearngreek.com`. |
+| `VITE_CONTACT_FORM_ENDPOINT` | JSON form backend (e.g. Formspree). Unset = contact form opens the visitor's mail app. |
+| `VITE_DONATE_URL` | Donation page (Ko-fi, Open Collective, Stripe Payment Link…). Unset = Support CTAs link to `/support`. |
+| `VITE_PLAUSIBLE_DOMAIN` | Enables cookieless Plausible analytics (page views + `Donate Click` events). |
 
 ## Deploy on Vercel
 
-> **Important:** This GitHub repo root is one level above the app. Either:
-> - use the root `vercel.json` (already configured), **or**
-> - in Vercel → Settings → General → **Root Directory** → `we_learn_greek_frontend`
+> **Important:** This GitHub repo root is one level above the app. The root `vercel.json`
+> builds from `we_learn_greek_frontend/`, so leave Vercel's **Root Directory** empty.
 
 1. Push this repo to GitHub (`mihajlovicn10/we_learn_greek_frontend`).
 2. Go to [vercel.com/new](https://vercel.com/new) → **Import** the repository.
-3. Vercel auto-detects **Vite**. Confirm:
-   - **Framework Preset:** Vite
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-   - **Install Command:** `npm install`
+3. Build settings come from the root `vercel.json` — no overrides needed. Node 20.19+ is required (Vite 7).
 4. Add **Environment Variables** (Production):
 
    ```
    VITE_API_URL=https://YOUR-BACKEND.onrender.com/api
-   VITE_ENABLE_DEMO_DATA=false
+   VITE_DONATE_URL=https://ko-fi.com/YOUR-PAGE          # optional
+   VITE_CONTACT_FORM_ENDPOINT=https://formspree.io/f/…  # optional
+   VITE_PLAUSIBLE_DOMAIN=your-domain.com                # optional
    ```
 
 5. Click **Deploy**.
@@ -55,6 +57,19 @@ App runs at [http://localhost:3000](http://localhost:3000).
 7. Redeploy the frontend after changing env vars (Vercel → Project → Deployments → Redeploy).
 
 `vercel.json` includes SPA rewrites so React Router deep links (e.g. `/conjugator/verbs`) work on refresh.
+
+## Translations (i18n)
+
+The UI is available in **English** (default) and **Greek**, using `react-i18next`.
+
+- Strings live in `src/i18n/locales/en.json` and `el.json`. Both files must have the same keys.
+- In components: `const { t } = useTranslation();` then `t('nouns.title')`. For sentences that contain a
+  link, use `<Trans i18nKey="…" components={{ link: <Link … /> }} />` with `<link>…</link>` in the string.
+- Language is picked from the saved choice (`localStorage['wlg-language']`), else the browser language,
+  else English. The EN / ΕΛ switch is in the navbar. `<html lang>` follows the active language.
+- Word data from the API (Greek words, English meanings) is content, not UI, and is not translated.
+- To add a language: add `src/i18n/locales/<code>.json`, register it in `src/i18n/index.js` (`resources`
+  and `LANGUAGES`).
 
 ## Scripts
 

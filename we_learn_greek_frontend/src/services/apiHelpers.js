@@ -1,3 +1,5 @@
+import i18n from '../i18n';
+
 /**
  * Build URLSearchParams, omitting null, undefined, and empty-string values.
  */
@@ -32,4 +34,13 @@ export function getPaginationMeta(data, pageSize = 12) {
     count,
     totalPages: Math.max(1, Math.ceil(count / pageSize)),
   };
+}
+
+/**
+ * User-facing message for a failed API request (never raw axios text like "Network Error").
+ */
+export function getErrorMessage(error, fallback = i18n.t('errors.generic')) {
+  if (!error) return null;
+  if (!error.response) return i18n.t('errors.unreachable');
+  return error.response.data?.detail || fallback;
 }

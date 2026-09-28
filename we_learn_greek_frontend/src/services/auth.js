@@ -1,4 +1,6 @@
+import axios from 'axios';
 import axiosInstance from './axiosConfig';
+import { API_URL } from '../config';
 import { ENDPOINTS } from '../constants/endpoints';
 
 export const authAPI = {
@@ -25,9 +27,15 @@ export const authAPI = {
     return response.data;
   },
 
-  /** Body: { refresh } → { access } */
+  /** Body: { refresh } → { access, refresh } (refresh tokens rotate) */
   refreshToken: async (refresh) => {
     const response = await axiosInstance.post(ENDPOINTS.auth.tokenRefresh, { refresh });
     return response.data;
+  },
+
+  /** Body: { refresh } → revokes the refresh token server-side.
+   *  Plain axios: a 401 here (token already expired) must not trigger the refresh interceptor. */
+  logout: async (refresh) => {
+    await axios.post(`${API_URL}${ENDPOINTS.auth.logout}`, { refresh });
   },
 };

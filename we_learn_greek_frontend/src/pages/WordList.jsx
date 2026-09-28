@@ -1,60 +1,90 @@
 import { useState } from 'react';
-import { FaVolumeUp } from 'react-icons/fa';
-import { ROUTES } from '../constants/routes';
+import { useTranslation } from 'react-i18next';
 import { declinatorAPI } from '../services/declinator';
-import { ExpandableCard, DeclensionTable, ListPageShell } from '../components/features';
-import { Badge, EmptyState, FilterSelect, Pagination, Alert, SkeletonList } from '../components/ui';
+import {
+  ExpandableCard,
+  DeclensionTable,
+  ListPageShell,
+  SaveWordButton,
+  WordTitle,
+  InfiniteScroll,
+} from '../components/features';
+import { Badge, EmptyState, FilterSelect, Alert, SkeletonList } from '../components/ui';
+import { AnimatedItem } from '../components/motion';
 import { useListData } from '../hooks/useListData';
+import { useSearchQuery } from '../hooks/useSearchQuery';
+import { useExpandable } from '../hooks/useExpandable';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
+import { matchesGreek } from '../utils/greek';
 import { demoNouns } from '../data/demo';
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 20;
 
 const demoFilterFn = (noun, term, filters) => {
   if (filters.gender && noun.gender !== filters.gender) return false;
-  if (term.trim() && !noun.basic_noun.toLowerCase().includes(term.toLowerCase())) return false;
-  return true;
+  return (
+    matchesGreek(noun.basic_noun, term) ||
+    matchesGreek(noun.nominative_plural, term) ||
+    matchesGreek(noun.translation, term)
+  );
 };
 
+/** Nouns: search any noun and see every case, with articles. (Formerly "Declinator".) */
 const WordList = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [query, setQuery] = useSearchQuery();
   const [genderFilter, setGenderFilter] = useState('');
-  const [expandedNoun, setExpandedNoun] = useState(null);
   const { speak } = useTextToSpeech();
+  const { t } = useTranslation();
 
   const filters = { gender: genderFilter };
 
-  const { items: nouns, currentPage, totalPages, paginate, loading, error, isDemo } = useListData({
+  const {
+    items: nouns,
+    total,
+    loading,
+    refreshing,
+    error,
+    isDemo,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    loadMoreError,
+  } = useListData({
     queryKey: ['nouns'],
     fetchFn: (page, params) => declinatorAPI.getAllNouns(page, params),
     pageSize: PAGE_SIZE,
-    searchTerm,
+    searchTerm: query,
     filters,
-    filterKey: genderFilter,
     demoItems: demoNouns,
     demoFilterFn,
   });
 
+  const { isOpen, toggle } = useExpandable(nouns, query);
+
   return (
     <ListPageShell
-      title="Greek Nouns"
-      backTo={ROUTES.declinator}
-      backLabel="Return to noun search"
-      searchTerm={searchTerm}
-      onSearchChange={(e) => setSearchTerm(e.target.value)}
-      searchPlaceholder="Search nouns..."
+      title={t('nouns.title')}
+      subtitle={t('nouns.subtitle')}
+      query={query}
+      onQueryChange={setQuery}
+      searchPlaceholder={t('nouns.placeholder')}
+      searchHint={t('nouns.hint')}
       filter={
-        <FilterSelect value={genderFilter} onChange={(e) => setGenderFilter(e.target.value)}>
-          <option value="">All Genders</option>
-          <option value="masculine">Masculine</option>
-          <option value="feminine">Feminine</option>
-          <option value="neuter">Neuter</option>
+        <FilterSelect
+          value={genderFilter}
+          onChange={(e) => setGenderFilter(e.target.value)}
+          aria-label={t('nouns.filterLabel')}
+        >
+          <option value="">{t('nouns.allGenders')}</option>
+          <option value="masculine">{t('nouns.masculine')}</option>
+          <option value="feminine">{t('nouns.feminine')}</option>
+          <option value="neuter">{t('nouns.neuter')}</option>
         </FilterSelect>
       }
     >
       {isDemo && (
         <Alert variant="info" className="mb-4">
-          Showing demo data — connect the API or set VITE_ENABLE_DEMO_DATA=false.
+          {t('common.demoData')}
         </Alert>
       )}
 
@@ -64,49 +94,51 @@ const WordList = () => {
         <Alert variant="error">{error}</Alert>
       ) : nouns.length === 0 ? (
         <EmptyState
-          message={
-            searchTerm || genderFilter
-              ? 'No nouns match your search criteria.'
-              : 'No nouns found in the database.'
-          }
-          actionLabel={!searchTerm && !genderFilter ? 'Return to noun search' : undefined}
-          actionTo={!searchTerm && !genderFilter ? ROUTES.declinator : undefined}
+          title={query ? t('nouns.noMatch', { query }) : t('nouns.empty')}
+          message={query || genderFilter ? t('search.noMatchHint') : t('nouns.emptyMessage')}
         />
       ) : (
-        <>
-          {nouns.map((noun) => (
-            <ExpandableCard
-              key={noun.id}
-              expanded={expandedNoun === noun.id}
-              onToggle={() => setExpandedNoun((prev) => (prev === noun.id ? null : noun.id))}
-              expandLabel="Show Declension"
-              collapseLabel="Hide Declension"
-              header={
-                <>
-                  <span className="font-display text-xl font-semibold text-brand-900">
-                    {noun.basic_noun}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      speak(noun.basic_noun);
-                    }}
-                    className="text-brand-600 hover:text-brand-700"
-                    title="Listen to pronunciation"
-                  >
-                    <FaVolumeUp size={16} />
-                  </button>
-                </>
-              }
-              badges={<Badge variant="olive">{noun.gender}</Badge>}
-            >
-              <DeclensionTable title="Singular" noun={noun} number="singular" />
-              <DeclensionTable title="Plural" noun={noun} number="plural" />
-            </ExpandableCard>
+        <div
+          className={`transition-opacity duration-200 ${refreshing ? 'opacity-60' : ''}`}
+          aria-busy={refreshing}
+        >
+          {nouns.map((noun, index) => (
+            <AnimatedItem key={noun.id} index={index} batchSize={PAGE_SIZE}>
+              <ExpandableCard
+                expanded={isOpen(noun.id)}
+                onToggle={() => toggle(noun.id)}
+                expandLabel={t('nouns.show')}
+                collapseLabel={t('nouns.hide')}
+                header={
+                  <WordTitle
+                    greek={noun.basic_noun}
+                    translation={noun.translation}
+                    onSpeak={() => speak(noun.basic_noun)}
+                  />
+                }
+                badges={
+                  <>
+                    <Badge variant="olive">
+                      {t(`grammar.gender.${noun.gender}`, { defaultValue: noun.gender })}
+                    </Badge>
+                    <SaveWordButton greek={noun.basic_noun} translation={noun.translation} />
+                  </>
+                }
+              >
+                <DeclensionTable noun={noun} />
+              </ExpandableCard>
+            </AnimatedItem>
           ))}
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={paginate} />
-        </>
+          <InfiniteScroll
+            shown={nouns.length}
+            pageSize={PAGE_SIZE}
+            total={total}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            fetchNextPage={fetchNextPage}
+            error={loadMoreError}
+          />
+        </div>
       )}
     </ListPageShell>
   );

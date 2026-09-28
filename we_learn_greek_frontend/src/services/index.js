@@ -5,8 +5,10 @@ export { conjugatorAPI } from './conjugator';
 export { declinatorAPI } from './declinator';
 export { greekToGreekAPI } from './greekToGreek';
 export { transparentWordsAPI } from './transparentWords';
+export { contactAPI } from './contact';
 export {
   buildQueryParams,
   normalizeListResponse,
   getPaginationMeta,
+  getErrorMessage,
 } from './apiHelpers';

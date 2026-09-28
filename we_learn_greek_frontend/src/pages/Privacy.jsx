@@ -1,87 +1,82 @@
 import { Link } from 'react-router-dom';
+import { Trans, useTranslation } from 'react-i18next';
 import { PageLayout } from '../components/layout';
 import { Card } from '../components/ui';
 import { ROUTES } from '../constants/routes';
+import { CONTACT_EMAIL } from '../config';
+
+// Update whenever the policy text changes (both locale files).
+const LAST_UPDATED = '2026-09-28';
+
+const LINK_CLASS = 'font-medium text-brand-600 hover:text-brand-700';
+const H2_CLASS = 'mb-4 text-center font-display text-xl font-semibold text-brand-900';
+const H3_CLASS = 'mb-2 text-center font-semibold text-gray-800';
 
 const Privacy = () => {
+  const { t, i18n } = useTranslation();
+  const list = (key) => t(key, { returnObjects: true });
+  const lastUpdated = new Date(LAST_UPDATED).toLocaleDateString(i18n.resolvedLanguage, {
+    dateStyle: 'long',
+  });
+
   return (
-    <PageLayout title="Privacy Policy" narrow>
-      <Card padding="lg" className="prose prose-brand max-w-none text-left">
+    <PageLayout title={t('privacy.title')} narrow>
+      <Card padding="lg" className="max-w-none text-left">
         <section className="mb-8">
-          <h2 className="mb-4 text-center font-display text-xl font-semibold text-brand-900">
-            Introduction
-          </h2>
-          <p className="text-center text-gray-600">
-            At We Learn Greek, we take your privacy seriously. This Privacy Policy explains how we
-            collect, use, disclose, and safeguard your information when you visit our website and
-            use our services.
-          </p>
+          <h2 className={H2_CLASS}>{t('privacy.introTitle')}</h2>
+          <p className="text-center text-gray-600">{t('privacy.intro')}</p>
         </section>
 
         <section className="mb-8">
-          <h2 className="mb-4 text-center font-display text-xl font-semibold text-brand-900">
-            Information We Collect
-          </h2>
-          <h3 className="mb-2 text-center font-semibold text-gray-800">Personal Information</h3>
-          <p className="mb-4 text-center text-gray-600">
-            We may collect personal information that you voluntarily provide when you register,
-            contact us, or participate in discussions.
-          </p>
+          <h2 className={H2_CLASS}>{t('privacy.collectTitle')}</h2>
+          <h3 className={H3_CLASS}>{t('privacy.personalTitle')}</h3>
+          <p className="mb-4 text-center text-gray-600">{t('privacy.personalIntro')}</p>
           <ul className="mb-4 list-disc pl-8 text-gray-600">
-            <li>Register for an account</li>
-            <li>Sign up for our newsletter</li>
-            <li>Contact us through our contact form</li>
-            <li>Participate in user forums or discussions</li>
+            {list('privacy.personal').map((item) => (
+              <li key={item}>{item}</li>
+            ))}
           </ul>
-          <h3 className="mb-2 text-center font-semibold text-gray-800">Usage Information</h3>
+          <h3 className={H3_CLASS}>{t('privacy.usageTitle')}</h3>
           <ul className="list-disc pl-8 text-gray-600">
-            <li>IP address and browser type</li>
-            <li>Device information</li>
-            <li>Pages visited and time spent</li>
+            {list('privacy.usage').map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+          <p className="mt-4 text-center text-gray-600">{t('privacy.analytics')}</p>
+        </section>
+
+        <section className="mb-8">
+          <h2 className={H2_CLASS}>{t('privacy.useTitle')}</h2>
+          <ul className="list-disc pl-8 text-gray-600">
+            {list('privacy.use').map((item) => (
+              <li key={item}>{item}</li>
+            ))}
           </ul>
         </section>
 
         <section className="mb-8">
-          <h2 className="mb-4 text-center font-display text-xl font-semibold text-brand-900">
-            How We Use Your Information
-          </h2>
+          <h2 className={H2_CLASS}>{t('privacy.rightsTitle')}</h2>
           <ul className="list-disc pl-8 text-gray-600">
-            <li>To provide and maintain our service</li>
-            <li>To notify you about changes to our service</li>
-            <li>To provide customer support</li>
-            <li>To improve our service and monitor usage</li>
-          </ul>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="mb-4 text-center font-display text-xl font-semibold text-brand-900">
-            Your Rights
-          </h2>
-          <ul className="list-disc pl-8 text-gray-600">
-            <li>Access your personal data</li>
-            <li>Correct inaccurate personal data</li>
-            <li>Request deletion of your personal data</li>
-            <li>Object to or restrict processing</li>
+            {list('privacy.rights').map((item) => (
+              <li key={item}>{item}</li>
+            ))}
           </ul>
         </section>
 
         <section>
-          <h2 className="mb-4 text-center font-display text-xl font-semibold text-brand-900">
-            Contact Us
-          </h2>
+          <h2 className={H2_CLASS}>{t('privacy.contactTitle')}</h2>
           <p className="text-center text-gray-600">
-            Questions about this policy? Email{' '}
-            <a href="mailto:privacy@welearngreek.com" className="font-medium text-brand-600 hover:text-brand-700">
-              privacy@welearngreek.com
-            </a>{' '}
-            or visit our{' '}
-            <Link to={ROUTES.contact} className="font-medium text-brand-600 hover:text-brand-700">
-              Contact page
-            </Link>
-            .
+            <Trans
+              i18nKey="privacy.contact"
+              values={{ email: CONTACT_EMAIL }}
+              components={{
+                email: <a href={`mailto:${CONTACT_EMAIL}`} className={LINK_CLASS} />,
+                link: <Link to={ROUTES.contact} className={LINK_CLASS} />,
+              }}
+            />
           </p>
           <p className="mt-4 text-center text-sm italic text-gray-500">
-            Last Updated: {new Date().toLocaleDateString()}
+            {t('common.lastUpdated', { date: lastUpdated })}
           </p>
         </section>
       </Card>

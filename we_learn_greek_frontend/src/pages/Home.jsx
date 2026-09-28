@@ -1,166 +1,168 @@
 import { Link } from 'react-router-dom';
-import { FaBook, FaPenNib, FaCheck, FaLanguage, FaGlobe, FaSearch, FaUserGraduate } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+import {
+  FaBookmark,
+  FaBookOpen,
+  FaGlobeEurope,
+  FaLanguage,
+  FaPenNib,
+  FaSearch,
+  FaTable,
+  FaUserGraduate,
+} from 'react-icons/fa';
 import { ROUTES } from '../constants/routes';
-import { PageHero } from '../components/features';
+import { DonateButton, PageHero } from '../components/features';
 import { Section } from '../components/layout';
-import { Button, Card } from '../components/ui';
+import { Card } from '../components/ui';
 import { FadeIn, StaggerChildren, StaggerItem } from '../components/motion';
 import { useHeroVideo } from '../hooks/useHeroVideo';
+import { usePageTitle } from '../hooks/usePageTitle';
+import { useAuth } from '../context/AuthContext';
+import { prefetchOn } from '../routes/pages';
 
-const HERO_HEADLINES = [
-  'Master Greek grammar with ease!',
-  'Learn Greek verbs and nouns!',
-  'Explore Greek vocabulary!',
+// Copy lives in the locale files (home.steps.*, home.tools.*); these hold icons and links.
+const STEPS = [
+  { key: 'lookUp', icon: FaSearch, links: [{ labelKey: 'nav.nouns', to: ROUTES.nouns }, { labelKey: 'nav.verbs', to: ROUTES.verbs }] },
+  { key: 'understand', icon: FaTable },
+  { key: 'save', icon: FaBookmark, links: [{ labelKey: 'nav.myWords', to: ROUTES.myWords }] },
 ];
 
-const features = [
-  {
-    icon: FaBook,
-    title: 'Dictionary',
-    description:
-      'A personalized vocabulary builder where students can add Greek words with pronunciation and translations.',
-    to: ROUTES.dictionary,
-  },
-  {
-    icon: FaPenNib,
-    title: 'Declinator',
-    description:
-      'Helps students master Greek grammar by exploring noun forms, cases, and variations.',
-    to: ROUTES.declinator,
-  },
-  {
-    icon: FaCheck,
-    title: 'Conjugator',
-    description:
-      'Enables learners to study Greek verbs by providing all possible verb forms and tenses.',
-    to: ROUTES.verbSearch,
-  },
-  {
-    icon: FaLanguage,
-    title: 'Greek to Greek Glossary',
-    description:
-      'Provides Greek word definitions entirely in Greek, reinforcing immersion and comprehension.',
-    to: ROUTES.greekToGreek,
-  },
-  {
-    icon: FaGlobe,
-    title: 'Transparent Greek Words',
-    description:
-      'Highlights Greek words in various languages, helping learners appreciate Greek linguistic influence.',
-    to: ROUTES.transparentLanguageSelect,
-  },
+const TOOLS = [
+  { key: 'nouns', icon: FaPenNib, to: ROUTES.nouns },
+  { key: 'verbs', icon: FaUserGraduate, to: ROUTES.verbs },
+  { key: 'greekDefinitions', icon: FaLanguage, to: ROUTES.greekToGreek },
+  { key: 'wordRoots', icon: FaGlobeEurope, to: ROUTES.wordRoots },
+  { key: 'myWords', icon: FaBookOpen, to: ROUTES.myWords },
 ];
 
-const steps = [
-  {
-    icon: FaSearch,
-    title: 'Explore',
-    description: 'Browse verbs, nouns, and transparent words — or build your personal dictionary.',
-  },
-  {
-    icon: FaUserGraduate,
-    title: 'Practice',
-    description: 'Study conjugations, declensions, and hear native pronunciation with text-to-speech.',
-  },
-  {
-    icon: FaBook,
-    title: 'Retain',
-    description: 'Save words to your account and revisit them anytime as your vocabulary grows.',
-  },
-];
+const HeroLink = ({ to, primary, children }) => (
+  <Link
+    to={to}
+    {...prefetchOn(to)}
+    className={`inline-flex items-center justify-center rounded-full px-6 py-3 text-lg font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-900 ${
+      primary ? 'bg-white text-brand-900 hover:bg-brand-50' : 'text-white ring-2 ring-white/60 hover:bg-white/10'
+    }`}
+  >
+    {children}
+  </Link>
+);
 
 const Home = () => {
   const video = useHeroVideo('background');
+  const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
+  usePageTitle(t('home.pageTitle'));
 
   return (
     <div className="min-h-screen">
-      <PageHero video={video} headlines={HERO_HEADLINES} />
+      <PageHero
+        video={video}
+        title={t('home.heroTitle')}
+        subtitle={t('home.heroSubtitle')}
+      >
+        <HeroLink to={ROUTES.verbs} primary>
+          {t('home.startWithVerbs')}
+        </HeroLink>
+        {isAuthenticated ? (
+          <HeroLink to={ROUTES.myWords}>{t('home.openMyWords')}</HeroLink>
+        ) : (
+          <HeroLink to={ROUTES.register}>{t('nav.signUp')}</HeroLink>
+        )}
+      </PageHero>
 
-      <Section variant="gradient" contained={false}>
-        <div className="page-container">
-          <FadeIn>
-            <h2 className="mb-12 text-center font-display text-3xl font-bold text-white sm:text-4xl">
-              About Us
-            </h2>
-          </FadeIn>
-          <StaggerChildren className="grid gap-8 md:grid-cols-2" stagger={0.12}>
-            <StaggerItem>
-              <Card className="bg-white/10 text-white shadow-none backdrop-blur-sm transition-all duration-300 hover:bg-white/15">
-                <p className="leading-relaxed text-white/95">
-                  We Learn Greek was born from a simple idea — to make learning Greek approachable,
-                  inspiring, and highly engaging. Instead of following the traditional classroom model,
-                  we provide a non-formal, self-paced learning environment with structured declensions,
-                  verb conjugations, and a personal dictionary.
-                </p>
+      <Section variant="default">
+        <FadeIn>
+          <p className="mb-2 text-center text-sm font-semibold uppercase tracking-wide text-brand-600">
+            {t('home.startHere')}
+          </p>
+          <h2 className="mb-12 text-center font-display text-3xl font-semibold text-brand-900">
+            {t('home.howToUse')}
+          </h2>
+        </FadeIn>
+        <StaggerChildren className="grid gap-6 md:grid-cols-3" stagger={0.12}>
+          {STEPS.map(({ key, icon: Icon, links }, index) => (
+            <StaggerItem key={key}>
+              <Card className="h-full">
+                <div className="mb-4 flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-600 font-semibold text-white">
+                    {index + 1}
+                  </span>
+                  <Icon className="text-brand-600" size={20} aria-hidden="true" />
+                </div>
+                <h3 className="mb-2 font-display text-xl font-bold text-brand-900">
+                  {t(`home.steps.${key}.title`)}
+                </h3>
+                <p className="text-sm text-gray-600">{t(`home.steps.${key}.description`)}</p>
+                {links && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {links.map((link) => (
+                      <Link
+                        key={link.to}
+                        to={link.to}
+                        {...prefetchOn(link.to)}
+                        className="rounded-full bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700 hover:bg-brand-100"
+                      >
+                        {t(link.labelKey)} →
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </Card>
             </StaggerItem>
-            <StaggerItem>
-              <Card className="bg-white/10 text-white shadow-none backdrop-blur-sm transition-all duration-300 hover:bg-white/15">
-                <p className="leading-relaxed text-white/95">
-                  Greek is not just a language — it is the origin of science, philosophy, and global
-                  vocabulary. Through Transparent Words, you will uncover how countless modern words
-                  trace their roots back to Greek across English, French, German, Spanish, and more.
-                </p>
-              </Card>
-            </StaggerItem>
-          </StaggerChildren>
-        </div>
+          ))}
+        </StaggerChildren>
       </Section>
 
       <Section variant="muted">
         <FadeIn>
           <h2 className="mb-12 text-center font-display text-3xl font-semibold text-brand-900">
-            How It Works
+            {t('home.everything')}
           </h2>
         </FadeIn>
-        <StaggerChildren className="grid gap-8 md:grid-cols-3" stagger={0.12}>
-          {steps.map(({ icon: Icon, title, description }, index) => (
-            <StaggerItem key={title}>
-              <Card hover className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-brand-100 text-brand-600 transition-colors duration-300">
-                  <Icon size={22} />
-                </div>
-                <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-brand-600">
-                  Step {index + 1}
-                </p>
-                <h3 className="mb-2 font-display text-xl font-bold text-brand-900">{title}</h3>
-                <p className="text-sm text-gray-600">{description}</p>
-              </Card>
+        <StaggerChildren className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" stagger={0.08}>
+          {TOOLS.map(({ key, icon: Icon, to }) => (
+            <StaggerItem key={key}>
+              <Link to={to} className="group block h-full" {...prefetchOn(to)}>
+                <Card hover className="flex h-full flex-col items-start">
+                  <div className="mb-4 rounded-full bg-brand-50 p-3 text-brand-600 transition-colors group-hover:bg-brand-100">
+                    <Icon size={26} aria-hidden="true" />
+                  </div>
+                  <h3 className="mb-1 font-display text-xl font-bold text-brand-900">{t(`nav.${key}`)}</h3>
+                  <p className="text-sm text-gray-600">{t(`home.tools.${key}`)}</p>
+                  <span className="mt-4 text-sm font-semibold text-brand-600 group-hover:text-brand-700">
+                    {t('home.open', { tool: t(`nav.${key}`) })}
+                  </span>
+                </Card>
+              </Link>
             </StaggerItem>
           ))}
         </StaggerChildren>
       </Section>
 
       <Section variant="default">
-        <FadeIn>
-          <h2 className="mb-12 text-center font-display text-3xl font-semibold text-brand-900">
-            What We Are Offering
-          </h2>
+        <FadeIn className="mx-auto max-w-3xl text-center">
+          <h2 className="mb-6 font-display text-3xl font-semibold text-brand-900">{t('home.whyTitle')}</h2>
+          <p className="mb-4 leading-relaxed text-gray-700">
+            {t('home.whyP1')}
+          </p>
+          <p className="leading-relaxed text-gray-700">
+            {t('home.whyP2')}{' '}
+            <Link to={ROUTES.about} className="font-medium text-brand-600 hover:text-brand-700">
+              {t('home.readStory')}
+            </Link>
+          </p>
         </FadeIn>
-        <StaggerChildren className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" stagger={0.08}>
-          {features.map(({ icon: Icon, title, description, to }) => (
-            <StaggerItem key={title}>
-              <Link to={to} className="group block h-full">
-                <Card hover className="flex h-full flex-col items-center text-center">
-                  <div className="mb-4 rounded-full bg-brand-50 p-4 text-brand-600 transition-all duration-300 group-hover:scale-105 group-hover:bg-brand-100">
-                    <Icon size={36} />
-                  </div>
-                  <h3 className="mb-2 font-display text-xl font-bold text-brand-900 transition-colors duration-300 group-hover:text-brand-700">
-                    {title}
-                  </h3>
-                  <p className="text-sm text-gray-600">{description}</p>
-                </Card>
-              </Link>
-            </StaggerItem>
-          ))}
-        </StaggerChildren>
+      </Section>
 
-        <FadeIn delay={0.2} className="mt-16 text-center">
-          <Link to={ROUTES.login}>
-            <Button variant="primary" size="large" shape="pill">
-              Get Started — Login
-            </Button>
-          </Link>
+      <Section variant="gradient" contained={false}>
+        <FadeIn className="page-container mx-auto max-w-3xl text-center">
+          <h2 className="mb-4 font-display text-3xl font-bold text-white sm:text-4xl">
+            {t('home.supportTitle')}
+          </h2>
+          <p className="mb-8 text-lg leading-relaxed text-white/90">
+            {t('home.supportText')}
+          </p>
+          <DonateButton label={t('donate.supportProject')} source="home" />
         </FadeIn>
       </Section>
     </div>

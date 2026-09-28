@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Trans, useTranslation } from 'react-i18next';
 import { AuthLayout } from '../components/layout';
 import { Alert, Button, FormField } from '../components/ui';
 import { authAPI } from '../services/auth';
@@ -7,16 +8,19 @@ import { useAuth } from '../context/AuthContext';
 import { ROUTES } from '../constants/routes';
 
 const Login = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const justRegistered = Boolean(location.state?.registered);
   const [formData, setFormData] = useState({
-    email: '',
+    email: location.state?.email ?? '',
     password: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
   const { login } = useAuth();
-  const from = location.state?.from?.pathname || ROUTES.home;
+  const { t } = useTranslation();
+  // Return to the page that sent the user here, including its state (e.g. a word to save).
+  const from = location.state?.from || ROUTES.home;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,7 +39,7 @@ const Login = () => {
       });
 
       if (!data.access) {
-        setError('Invalid login response from server.');
+        setError(t('auth.invalidResponse'));
         return;
       }
 
@@ -46,11 +50,10 @@ const Login = () => {
       };
 
       login(userData, { access: data.access, refresh: data.refresh });
-      navigate(from, { replace: true });
+      navigate(from, { replace: true, state: from.state });
     } catch (err) {
       setError(
-        err.response?.data?.detail ||
-          'Login failed. Please check your credentials and try again.'
+        err.response?.data?.detail || t('auth.loginFailed')
       );
     } finally {
       setLoading(false);
@@ -59,19 +62,30 @@ const Login = () => {
 
   return (
     <AuthLayout
-      title="Login to Your Account"
+      title={t('auth.loginTitle')}
       footer={
         <p className="mt-6 text-center text-sm text-gray-600">
-          Don&apos;t have an account?{' '}
-          <Link
-            to={ROUTES.register}
-            className="font-medium text-brand-600 hover:text-brand-700"
-          >
-            Register here
-          </Link>
+          <Trans
+            i18nKey="auth.noAccount"
+            components={{
+              link: (
+                <Link
+                  to={ROUTES.register}
+                  state={location.state?.from ? { from: location.state.from } : undefined}
+                  className="font-medium text-brand-600 hover:text-brand-700"
+                />
+              ),
+            }}
+          />
         </p>
       }
     >
+      {justRegistered && !error && (
+        <Alert variant="success" className="mb-4 text-center">
+          {t('auth.accountCreated')}
+        </Alert>
+      )}
+
       {error && (
         <Alert variant="error" className="mb-4 text-center">
           {error}
@@ -80,33 +94,33 @@ const Login = () => {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <FormField
-          label="Email"
+          label={t('auth.email')}
           type="email"
           id="email"
           name="email"
           value={formData.email}
           onChange={handleChange}
           variant="pill-dark"
-          placeholder="Enter your email"
+          placeholder={t('auth.emailPlaceholder')}
           required
           autoComplete="email"
         />
 
         <FormField
-          label="Password"
+          label={t('auth.password')}
           type="password"
           id="password"
           name="password"
           value={formData.password}
           onChange={handleChange}
           variant="pill-dark"
-          placeholder="Enter your password"
+          placeholder={t('auth.passwordPlaceholder')}
           required
           autoComplete="current-password"
         />
 
         <Button type="submit" variant="primary" shape="pill" fullWidth disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? t('auth.loggingIn') : t('auth.logIn')}
         </Button>
       </form>
     </AuthLayout>

@@ -1,3 +1,5 @@
+import { usePageTitle } from '../../hooks/usePageTitle';
+
 /**
  * Standard page wrapper — centered content, optional title block.
  */
@@ -9,6 +11,8 @@ function PageLayout({
   background = 'sand',
   className = '',
 }) {
+  usePageTitle(title);
+
   const backgrounds = {
     sand: 'bg-brand-50',
     muted: 'bg-surface-muted',

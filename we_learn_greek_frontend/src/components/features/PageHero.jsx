@@ -1,26 +1,14 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useRotatingText } from '../../hooks/useRotatingText';
 
-const HEIGHTS = {
-  sm: 'h-72 sm:h-80',
-  md: 'h-96 sm:h-[440px]',
-  lg: 'h-80 sm:h-[547px]',
-};
-
-function PageHero({ video, headlines = [], height = 'lg', interval = 3000, className = '' }) {
-  const index = useRotatingText(headlines, interval);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+/** Full-width video hero (Home only). Falls back to a gradient on mobile and for reduced motion. */
+function PageHero({ video, title, subtitle, children, className = '' }) {
+  const [showVideo, setShowVideo] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const mobileQuery = window.matchMedia('(max-width: 639px)');
-
-    const update = () => {
-      setReducedMotion(motionQuery.matches);
-      setIsMobile(mobileQuery.matches);
-    };
+    const update = () => setShowVideo(!motionQuery.matches && !mobileQuery.matches);
 
     update();
     motionQuery.addEventListener('change', update);
@@ -31,35 +19,30 @@ function PageHero({ video, headlines = [], height = 'lg', interval = 3000, class
     };
   }, []);
 
-  const showVideo = video && !reducedMotion && !isMobile;
-
   return (
-    <div className={`relative w-full overflow-hidden ${HEIGHTS[height] ?? HEIGHTS.lg} ${className}`}>
-      {showVideo ? (
+    <div className={`relative w-full overflow-hidden ${className}`}>
+      {/* Gradient first; the video fades in over it once a frame is ready (no pop-in). */}
+      <div className="absolute inset-0 bg-gradient-brand" />
+      {video && showVideo && (
         <video
           src={video}
-          className="absolute inset-0 h-full w-full object-cover"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+            videoReady ? 'opacity-100' : 'opacity-0'
+          }`}
           autoPlay
           muted
           loop
           playsInline
+          onLoadedData={() => setVideoReady(true)}
+          aria-hidden="true"
         />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-brand" />
       )}
-      <div className="absolute inset-0 flex items-center justify-center bg-gradient-hero-overlay px-4">
-        {headlines.length > 0 && (
-          <motion.h1
-            key={index}
-            initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reducedMotion ? undefined : { opacity: 0, y: -20 }}
-            transition={{ duration: reducedMotion ? 0 : 0.5 }}
-            className="z-10 max-w-4xl text-center font-display text-3xl font-bold text-white sm:text-5xl lg:text-6xl"
-          >
-            {headlines[index]}
-          </motion.h1>
-        )}
+      {/* Strong, even overlay so text stays readable over any video frame. */}
+      <div className="absolute inset-0 bg-brand-900/65" />
+      <div className="relative z-10 flex min-h-[26rem] flex-col items-center justify-center px-4 py-16 text-center sm:min-h-[32rem]">
+        <h1 className="max-w-4xl font-display text-4xl font-bold text-white sm:text-6xl">{title}</h1>
+        {subtitle && <p className="mt-5 max-w-2xl text-lg text-white/90 sm:text-xl">{subtitle}</p>}
+        {children && <div className="mt-8 flex flex-wrap justify-center gap-3">{children}</div>}
       </div>
     </div>
   );

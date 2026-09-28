@@ -1,4 +1,5 @@
 import { FaSearch } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import Button from './Button';
 import Input from './Input';
 
@@ -6,12 +7,13 @@ function SearchBar({
   value,
   onChange,
   onSubmit,
-  placeholder = 'Search...',
+  placeholder,
   showButton = false,
-  buttonLabel = 'Search',
+  buttonLabel,
   className = '',
   inputClassName = '',
 }) {
+  const { t } = useTranslation();
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit?.(e);
@@ -27,7 +29,7 @@ function SearchBar({
         type="search"
         value={value}
         onChange={onChange}
-        placeholder={placeholder}
+        placeholder={placeholder ?? t('common.searchPlaceholder')}
         variant="pill-dark"
         className={`!pl-11 ${showButton ? '!pr-28' : ''} placeholder:text-white/70 ${inputClassName}`}
       />
@@ -39,7 +41,7 @@ function SearchBar({
           size="small"
           className="absolute right-1 top-1/2 -translate-y-1/2"
         >
-          {buttonLabel}
+          {buttonLabel ?? t('common.search')}
         </Button>
       )}
     </form>
