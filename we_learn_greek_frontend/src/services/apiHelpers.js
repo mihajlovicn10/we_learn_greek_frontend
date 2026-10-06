@@ -42,5 +42,15 @@ export function getPaginationMeta(data, pageSize = 12) {
 export function getErrorMessage(error, fallback = i18n.t('errors.generic')) {
   if (!error) return null;
   if (!error.response) return i18n.t('errors.unreachable');
-  return error.response.data?.detail || fallback;
+  if (error.response.status === 429) return rateLimitMessage(error);
+  // DRF uses {detail}; the auth endpoints use {error}.
+  return error.response.data?.detail || error.response.data?.error || fallback;
+}
+
+/** 429 → "Too many requests, try again in N seconds", using the API's Retry-After header. */
+export function rateLimitMessage(error) {
+  const seconds = Number.parseInt(error?.response?.headers?.['retry-after'], 10);
+  return Number.isFinite(seconds) && seconds > 0
+    ? i18n.t('errors.rateLimitedFor', { count: seconds })
+    : i18n.t('errors.rateLimited');
 }

@@ -3,7 +3,7 @@ import { FaBookmark } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { ROUTES } from '../../constants/routes';
 import { prefetchOn } from '../../routes/pages';
-import { transliterate } from '../../utils/greek';
+import { transliterate, WORD_LIMITS } from '../../utils/greek';
 
 /**
  * Opens My Words with the add form pre-filled. The learner reviews it and saves, so nothing is
@@ -19,8 +19,9 @@ function SaveWordButton({ greek, translation = '', pronunciation }) {
       state: {
         prefill: {
           greek,
-          pronunciation: pronunciation || transliterate(greek),
-          translation,
+          // The API caps these at 30 characters; trim long values so the form starts valid.
+          pronunciation: (pronunciation || transliterate(greek)).slice(0, WORD_LIMITS.max),
+          translation: translation.slice(0, WORD_LIMITS.max),
         },
       },
     });

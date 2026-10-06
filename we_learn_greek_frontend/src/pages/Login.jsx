@@ -6,6 +6,7 @@ import { Alert, Button, FormField } from '../components/ui';
 import { authAPI } from '../services/auth';
 import { useAuth } from '../context/AuthContext';
 import { ROUTES } from '../constants/routes';
+import { getErrorMessage } from '../services/apiHelpers';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -52,8 +53,9 @@ const Login = () => {
       login(userData, { access: data.access, refresh: data.refresh });
       navigate(from, { replace: true, state: from.state });
     } catch (err) {
+      // 401 is always "wrong email or password" to the user (the API says it in English as {error}).
       setError(
-        err.response?.data?.detail || t('auth.loginFailed')
+        err.response?.status === 401 ? t('auth.loginFailed') : getErrorMessage(err, t('auth.loginFailed'))
       );
     } finally {
       setLoading(false);

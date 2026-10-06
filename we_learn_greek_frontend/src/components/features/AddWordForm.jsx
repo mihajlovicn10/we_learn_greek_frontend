@@ -3,7 +3,7 @@ import { FaKeyboard } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { Alert, Button, FormField } from '../ui';
 import GreekKeyboard from './GreekKeyboard';
-import { transliterate } from '../../utils/greek';
+import { greekWordError, tidyGreekWord, transliterate, WORD_LIMITS } from '../../utils/greek';
 
 const EMPTY = { greek: '', pronunciation: '', translation: '' };
 
@@ -32,12 +32,18 @@ function AddWordForm({ prefill, onSave, isSaving, error }) {
     e.preventDefault();
     setLocalError(null);
     const word = {
-      greek: form.greek.trim(),
+      greek: tidyGreekWord(form.greek),
       pronunciation: form.pronunciation.trim() || suggestedPronunciation,
       translation: form.translation.trim(),
     };
     if (!word.greek || !word.translation) {
       setLocalError(t('myWords.missingFields'));
+      return;
+    }
+    // Same rules as the API, checked here so the learner gets a clear message in their language.
+    const problem = greekWordError(word.greek);
+    if (problem) {
+      setLocalError(t(problem));
       return;
     }
     const saved = await onSave(word);
@@ -56,6 +62,7 @@ function AddWordForm({ prefill, onSave, isSaving, error }) {
             placeholder={t('myWords.greekPlaceholder')}
             lang="el"
             autoComplete="off"
+            maxLength={WORD_LIMITS.max}
           />
           <button
             type="button"
@@ -74,6 +81,7 @@ function AddWordForm({ prefill, onSave, isSaving, error }) {
           onChange={update('pronunciation')}
           placeholder={suggestedPronunciation || t('myWords.pronunciationPlaceholder')}
           autoComplete="off"
+          maxLength={WORD_LIMITS.max}
         />
         <FormField
           ref={translationRef}
@@ -83,6 +91,7 @@ function AddWordForm({ prefill, onSave, isSaving, error }) {
           onChange={update('translation')}
           placeholder={t('myWords.meaningPlaceholder')}
           autoComplete="off"
+          maxLength={WORD_LIMITS.max}
         />
       </div>
 

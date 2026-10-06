@@ -5,6 +5,7 @@ import { AuthLayout } from '../components/layout';
 import { Alert, Button, FormField } from '../components/ui';
 import { authAPI } from '../services/auth';
 import { ROUTES } from '../constants/routes';
+import { getErrorMessage } from '../services/apiHelpers';
 import { useAuth } from '../context/AuthContext';
 import { showToast } from '../components/common/Toast';
 
@@ -49,13 +50,15 @@ const Register = () => {
         last_name: formData.last_name,
       });
     } catch (err) {
+      // Show the first field error the API returned ({field: [messages]}), else a general message.
+      const data = err.response?.data;
+      const fieldError = ['email', 'password', 'first_name', 'last_name']
+        .map((field) => data?.[field]?.[0])
+        .find(Boolean);
       setError(
-        err.response?.data?.detail ||
-          err.response?.data?.email?.[0] ||
-          err.response?.data?.first_name?.[0] ||
-          err.response?.data?.last_name?.[0] ||
-          err.response?.data?.password?.[0] ||
-          t('auth.registerFailed')
+        err.response?.status === 400 && fieldError
+          ? fieldError
+          : getErrorMessage(err, t('auth.registerFailed'))
       );
       setLoading(false);
       return;

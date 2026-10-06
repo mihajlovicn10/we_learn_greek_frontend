@@ -38,7 +38,7 @@ App runs at [http://localhost:3000](http://localhost:3000).
 4. Add **Environment Variables** (Production):
 
    ```
-   VITE_API_URL=https://YOUR-BACKEND.onrender.com/api
+   VITE_API_URL=https://we-learn-greek-backend-1.onrender.com/api
    VITE_DONATE_URL=https://ko-fi.com/YOUR-PAGE          # optional
    VITE_CONTACT_FORM_ENDPOINT=https://formspree.io/f/…  # optional
    VITE_PLAUSIBLE_DOMAIN=your-domain.com                # optional
