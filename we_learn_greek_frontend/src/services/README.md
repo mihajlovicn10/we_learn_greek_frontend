@@ -2,7 +2,10 @@
 
 Frontend HTTP client for the Django REST backend.
 
-- **Host:** `VITE_API_URL` in `.env` (e.g. `http://localhost:8000/api`)
+- **Host:** `VITE_API_URL` — production: `https://we-learn-greek-backend-1.onrender.com/api`, local: `http://localhost:8000/api`
+- **Live docs:** `/swagger/` and `/redoc/` on the backend host
+- **Errors:** 400 `{field: [messages]}` · 401 not authenticated (auth endpoints: `{error}`) · 429 rate limited (`Retry-After` header) — `getErrorMessage()` turns these into translated messages
+- **Rate limits (per IP, or per user):** register/login 10/min · refresh/logout 30/min · word endpoints 120/min and 2000/day
 - **Paths:** `src/constants/endpoints.js`
 - **Client:** `axiosConfig.js` — Bearer JWT; auto-refresh on 401
 
@@ -13,7 +16,8 @@ Frontend HTTP client for the Django REST backend.
 | POST | `/register/` | Public | `email`, `password`, `first_name`, `last_name` |
 | POST | `/login/` | Public | `email`, `password` → `{ access, refresh }` |
 | POST | `/token/` | Public | Same as login (SimpleJWT, email-based) |
-| POST | `/token/refresh/` | Public | `{ refresh }` → `{ access }` |
+| POST | `/token/refresh/` | Public | `{ refresh }` → `{ access, refresh }` — refresh tokens rotate; store the new one |
+| POST | `/logout/` | Public | `{ refresh }` → `200 {}` — revokes the refresh token |
 
 ### Login response
 
@@ -124,7 +128,8 @@ const data = await dictionaryAPI.getAllWords(1, { search: 'καλη' });
 const words = normalizeListResponse(data);
 ```
 
-Pages fall back to demo data when the backend is unreachable.
+Lists are paginated (`page_size` max 50, dictionary max 100) and the UI loads them as endless scroll.
+With `VITE_ENABLE_DEMO_DATA=true` (local dev only), pages fall back to demo data when the backend is unreachable.
 
 ## Route protection
 

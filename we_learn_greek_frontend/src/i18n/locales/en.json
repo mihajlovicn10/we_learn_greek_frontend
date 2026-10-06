@@ -247,7 +247,12 @@
     "allFieldsRequired": "All fields are required",
     "demoSave": "Saving requires a connected API (demo mode)",
     "demoEdit": "Editing requires a connected API (demo mode)",
-    "demoDelete": "Delete requires a connected API (demo mode)"
+    "demoDelete": "Delete requires a connected API (demo mode)",
+    "errors": {
+      "tooShort": "The Greek word must be at least 2 letters.",
+      "tooLong": "The Greek word can be at most 30 characters.",
+      "greekOnly": "Use Greek letters only, with single spaces between words."
+    }
   },
   "home": {
     "pageTitle": "Learn Modern Greek for free",
@@ -379,7 +384,10 @@
     "loadFailed": "Failed to load data.",
     "boundaryTitle": "Oops! Something went wrong",
     "boundaryText": "An unexpected error occurred. Please refresh the page and try again.",
-    "refresh": "Refresh Page"
+    "refresh": "Refresh Page",
+    "rateLimited": "Too many requests. Please wait a moment and try again.",
+    "rateLimitedFor_one": "Too many requests. Please try again in {{count}} second.",
+    "rateLimitedFor_other": "Too many requests. Please try again in {{count}} seconds."
   },
   "notFound": {
     "title": "Page not found",

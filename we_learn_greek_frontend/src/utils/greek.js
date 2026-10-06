@@ -118,3 +118,23 @@ export function matchesGreek(value, query) {
   if (!LATIN_RE.test(query)) return false;
   return looseLatin(transliterate(value)).includes(looseLatin(query));
 }
+
+// Mirrors backend dictionary/validators.py: Greek and Coptic letters (all tonos/dialytika forms,
+// final sigma) plus Greek Extended (polytonic), words separated by single spaces.
+const GREEK_LETTER = 'ΆΈ-ΊΌΎ-ΡΣ-ώἀ-῿';
+const GREEK_WORDS_RE = new RegExp(`^[${GREEK_LETTER}]+( [${GREEK_LETTER}]+)*$`, 'u');
+
+/** Dictionary limits, as enforced by the API (greek_word 2–30; other fields ≤ 30). */
+export const WORD_LIMITS = { min: 2, max: 30 };
+
+/** Collapse runs of whitespace the same way the API does before validating. */
+export const tidyGreekWord = (text = '') => text.replace(/\s+/g, ' ').trim();
+
+/** Returns a translation key describing what's wrong with a dictionary word, or null if valid. */
+export function greekWordError(text) {
+  const word = tidyGreekWord(text);
+  if (word.length < WORD_LIMITS.min) return 'myWords.errors.tooShort';
+  if (word.length > WORD_LIMITS.max) return 'myWords.errors.tooLong';
+  if (!GREEK_WORDS_RE.test(word)) return 'myWords.errors.greekOnly';
+  return null;
+}

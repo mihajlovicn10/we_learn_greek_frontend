@@ -11,7 +11,7 @@ import { Alert, Card, EmptyState, SearchBar, SkeletonList } from '../components/
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import { showToast } from '../components/common/Toast';
-import { matchesGreek } from '../utils/greek';
+import { greekWordError, matchesGreek, tidyGreekWord, WORD_LIMITS } from '../utils/greek';
 import { ENABLE_DEMO_DATA } from '../config';
 import { demoSavedWords } from '../data/demo';
 
@@ -144,7 +144,12 @@ const SavedWords = () => {
       showToast.error(t('myWords.allFieldsRequired'));
       return;
     }
-    updateMutation.mutate({ id, ...draft });
+    const problem = greekWordError(draft.greek);
+    if (problem) {
+      showToast.error(t(problem));
+      return;
+    }
+    updateMutation.mutate({ id, ...draft, greek: tidyGreekWord(draft.greek) });
   };
 
   const handleEditKeyDown = (e, id) => {
@@ -159,6 +164,7 @@ const SavedWords = () => {
       onChange={(e) => setDraft((prev) => ({ ...prev, [field]: e.target.value }))}
       onKeyDown={(e) => handleEditKeyDown(e, id)}
       aria-label={label}
+      maxLength={WORD_LIMITS.max}
       className="w-full rounded-lg border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
     />
   );
