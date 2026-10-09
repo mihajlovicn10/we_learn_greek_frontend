@@ -22,7 +22,7 @@ import { demoWords, localizeDemoWords } from '../data/demo';
 
 const PAGE_SIZE = 20;
 
-const KNOWN_LANGUAGES = ['en', 'fr', 'de', 'es', 'ru', 'it'];
+const KNOWN_LANGUAGES = ['en', 'fr', 'de', 'es', 'it', 'ru', 'sr', 'uk', 'ar'];
 
 const demoFilterFn = (word, term, filters) => {
   if (filters.category && word.category !== filters.category) return false;
@@ -140,7 +140,7 @@ const TransparentWords = () => {
                       onSpeak={() => speakForLanguage(word.greek_word, language, true)}
                     />
                     <span className="text-gray-400">→</span>
-                    <span className="text-lg font-semibold text-gray-700">{word.language_word}</span>
+                    <bdi className="text-lg font-semibold text-gray-700">{word.language_word}</bdi>
                     <button
                       type="button"
                       onClick={(e) => {
@@ -173,7 +173,7 @@ const TransparentWords = () => {
                   </div>
                   <div>
                     <h3 className="mb-1 font-semibold text-brand-900">{t('wordRoots.etymology')}</h3>
-                    <p className="text-gray-600">{word.etymology}</p>
+                    <p dir="auto" className="text-gray-600">{word.etymology}</p>
                   </div>
                   <div>
                     <h3 className="mb-1 font-semibold text-brand-900">{t('wordRoots.example')}</h3>
@@ -190,8 +190,8 @@ const TransparentWords = () => {
                           <FaVolumeUp size={14} />
                         </button>
                       </p>
-                      <p className="text-gray-600">
-                        {word.example_translation}
+                      <p dir="auto" className="text-gray-600">
+                        <bdi>{word.example_translation}</bdi>
                         <button
                           type="button"
                           onClick={() =>

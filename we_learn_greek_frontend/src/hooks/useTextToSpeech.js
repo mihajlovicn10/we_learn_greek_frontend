@@ -5,6 +5,9 @@ const LANG_MAP = {
   es: 'es-ES',
   ru: 'ru-RU',
   it: 'it-IT',
+  sr: 'sr-RS',
+  uk: 'uk-UA',
+  ar: 'ar-SA',
 };
 
 export function useTextToSpeech() {

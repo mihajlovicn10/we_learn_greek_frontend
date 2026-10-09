@@ -24,6 +24,12 @@ export const transparentWordsAPI = {
     return response.data;
   },
 
+  /** How many words a language has (one tiny request: page_size=1, read `count`). */
+  getLanguageCount: async (language) => {
+    const data = await transparentWordsAPI.getWordsByLanguage(language, 1, { page_size: 1 });
+    return typeof data?.count === 'number' ? data.count : null;
+  },
+
   getWordById: async (id) => {
     const response = await axiosInstance.get(ENDPOINTS.transparentWords.detail(id));
     return response.data;

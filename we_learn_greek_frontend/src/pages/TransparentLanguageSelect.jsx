@@ -1,29 +1,44 @@
 import { useTranslation } from 'react-i18next';
+import { useQueries } from '@tanstack/react-query';
+import { transparentWordsAPI } from '../services/transparentWords';
 import { ROUTES } from '../constants/routes';
 import { LanguagePicker, ListPageShell } from '../components/features';
 
-import ukFlag from '../assets/images/flags/uk.png';
-import frFlag from '../assets/images/flags/france.png';
-import deFlag from '../assets/images/flags/germany.png';
-import esFlag from '../assets/images/flags/spain.png';
-import ruFlag from '../assets/images/flags/russia.png';
-import itFlag from '../assets/images/flags/italy.png';
-
+// `code` is the ISO 639-1 code used in the URL and the API; `label` is what the badge shows
+// (Ukrainian is "uk" underneath but shown as "UA"). Every language is listed; one whose content
+// file (backend content/transparent-words/<code>.json) isn't loaded yet shows as "Coming soon"
+// and becomes available on its own once the API has words for it, with no frontend deploy.
 const LANGUAGES = [
-  { code: 'en', flag: ukFlag, example: 'δημοκρατία → democracy' },
-  { code: 'fr', flag: frFlag, example: 'φιλοσοφία → philosophie' },
-  { code: 'de', flag: deFlag, example: 'μουσική → Musik' },
-  { code: 'es', flag: esFlag, example: 'τηλέφωνο → teléfono' },
-  { code: 'ru', flag: ruFlag, example: 'γεωγραφία → география' },
-  { code: 'it', flag: itFlag, example: 'αστρονομία → astronomia' },
+  { code: 'en', label: 'EN', example: 'δημοκρατία → democracy' },
+  { code: 'fr', label: 'FR', example: 'φιλοσοφία → philosophie' },
+  { code: 'de', label: 'DE', example: 'μουσική → Musik' },
+  { code: 'es', label: 'ES', example: 'τηλέφωνο → teléfono' },
+  { code: 'it', label: 'IT', example: 'αστρονομία → astronomia' },
+  { code: 'ru', label: 'RU', example: 'γεωγραφία → география' },
+  { code: 'sr', label: 'SR', example: 'φιλοσοφία → филозофија' },
+  { code: 'uk', label: 'UA', example: 'φιλοσοφία → філософія' },
+  { code: 'ar', label: 'AR', example: 'φιλοσοφία → فلسفة' },
 ];
 
 /** Word Roots: pick your language to see Greek words you already know. (Formerly "Transparent Words".) */
 const TransparentLanguageSelect = () => {
   const { t } = useTranslation();
+
+  // Word count per language. While loading or if the API is unreachable, every card stays usable.
+  const counts = useQueries({
+    queries: LANGUAGES.map(({ code }) => ({
+      queryKey: ['transparent-words-count', code],
+      queryFn: () => transparentWordsAPI.getLanguageCount(code),
+      staleTime: 10 * 60_000,
+      retry: false,
+    })),
+  });
+
+  const languages = LANGUAGES.map((lang, index) => ({ ...lang, count: counts[index].data }));
+
   return (
     <ListPageShell title={t('wordRoots.title')} subtitle={t('wordRoots.subtitle')}>
-      <LanguagePicker languages={LANGUAGES} linkTo={ROUTES.wordRootsLanguage} />
+      <LanguagePicker languages={languages} linkTo={ROUTES.wordRootsLanguage} />
     </ListPageShell>
   );
 };

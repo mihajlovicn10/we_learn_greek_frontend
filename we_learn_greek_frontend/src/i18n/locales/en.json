@@ -180,6 +180,9 @@
       "es": "Spanish",
       "ru": "Russian",
       "it": "Italian",
+      "sr": "Serbian",
+      "uk": "Ukrainian",
+      "ar": "Arabic",
       "other": "Other Languages"
     },
     "listTitle": "Greek Words in {{language}}",
@@ -199,7 +202,10 @@
     "listenLanguageExample": "Listen to the {{language}} example",
     "noMatch": "No words match your search. Check the spelling or clear the category filter.",
     "empty": "No words found for this language yet.",
-    "chooseAnother": "Choose another language"
+    "chooseAnother": "Choose another language",
+    "comingSoon": "Coming soon",
+    "wordCount_one": "{{count}} word",
+    "wordCount_other": "{{count}} words"
   },
   "myWords": {
     "title": "My Words",
