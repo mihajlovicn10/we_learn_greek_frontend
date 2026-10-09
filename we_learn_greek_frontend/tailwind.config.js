@@ -54,6 +54,8 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
         display: ['Literata', 'Georgia', 'Times New Roman', 'serif'],
+        // Language badges on Word Roots (see index.html for the subset font request).
+        ipa: ['"Gentium Book Plus"', 'Georgia', 'serif'],
       },
       borderRadius: {
         xl: '1rem',

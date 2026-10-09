@@ -23,7 +23,7 @@ function LanguagePicker({ languages, linkTo }) {
           <>
             <div
               aria-hidden="true"
-              className={`mb-3 flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold tracking-wide ring-2 transition-colors duration-300 ${
+              className={`mb-3 flex h-16 w-16 items-center justify-center rounded-full font-ipa text-2xl font-bold tracking-wide ring-2 transition-colors duration-300 ${
                 comingSoon
                   ? 'bg-gray-100 text-gray-400 ring-gray-200'
                   : 'bg-brand-50 text-brand-700 ring-brand-100 group-hover:bg-brand-600 group-hover:text-white'
