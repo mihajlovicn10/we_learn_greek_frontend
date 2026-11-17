@@ -1,6 +1,6 @@
 # We Learn Greek — Frontend
 
-React + Vite SPA for the [We Learn Greek](https://github.com/mihajlovicn10/we_learn_greek_frontend) learning platform: verb conjugations, noun declensions, personal dictionary, Greek-to-Greek glossary, and transparent words across languages.
+React + Vite SPA for the [We Learn Greek](https://we-learn-greek-frontend.vercel.app) learning platform: verb conjugations, noun declensions, personal dictionary, Greek-to-Greek glossary, and transparent words across languages.
 
 **Stack:** React 18 · Vite 7 · React Router 7 · TanStack Query · Tailwind CSS · Framer Motion · Axios (JWT)
 
